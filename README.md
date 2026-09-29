@@ -3,6 +3,10 @@
 A clickable v1 concept for FORUT Barneaksjonen's home platform, built for the pitch.
 Mobile-first web app, Norwegian by default with an English toggle.
 
+## Live demo
+
+https://salesteam-create.github.io/forut-monkey-world/ (served by GitHub Pages from this branch).
+
 ## Run it
 
 No build step. From the repo root:
