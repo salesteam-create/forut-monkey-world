@@ -2,9 +2,12 @@
 // Single-page vanilla JS. Screens are rendered into #screen; state lives in memory and,
 // when the browser allows it, in localStorage so a demo survives a reload.
 (function () {
-  const STORE_KEY = 'monkis-verden-demo-v1';
+  const STORE_KEY = 'monkis-verden-demo-v2';
   const GOAL = 24;
-  const SCREEN_MAX_MIN = 10;
+  const MYSTERY_AT = 20;
+  const NATION_BASE = 412380; // example national total for the pitch
+  const PLAY_DAY = new Date(2028, 5, 11);
+  const DEMO_DATE = new Date(2027, 9, 22);
   // Demo "today": Friday 22 October 2027, first autumn of the Nepal campaign.
   const TODAY = 22;
   const MONTH_OFFSET = 4; // 1 October 2027 is a Friday (Monday-first grid)
@@ -18,7 +21,10 @@
     activeDays: [1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 18, 19, 20, 21],
     missionsWeek: 3,
     feelingsWeek: 2,
-    screenSeconds: 190,
+    screenSeconds: 60,
+    screenLimit: 10,
+    nightOverride: false,
+    lastStage: 2,
     reminder: true,
     photos: []
   };
@@ -27,6 +33,9 @@
   let screen = state.onboarded ? 'hub' : 'welcome';
   let lastUnlocked = null;
   let justAdded = false;
+  let timers = [];
+  let huntFound = {};
+  let currentSong = null;
 
   // ---------- storage ----------
   function load() {
@@ -91,6 +100,8 @@
   const $$ = sel => Array.from(document.querySelectorAll(sel));
   function go(next) {
     screen = next;
+    timers.forEach(clearTimeout);
+    timers = [];
     const fx = $('#fx');
     if (fx) fx.innerHTML = '';
     render();
@@ -118,12 +129,20 @@
       setTimeout(() => c.remove(), 3400);
     }
   }
+  // How far the hub jungle has grown this month.
+  function stage(n) {
+    return n >= 24 ? 4 : n >= 18 ? 3 : n >= 12 ? 2 : n >= 6 ? 1 : 0;
+  }
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
   function addBanana() {
     const before = state.bananas;
     state.bananas = Math.min(GOAL, state.bananas + 1);
     if (!state.activeDays.includes(TODAY)) state.activeDays.push(TODAY);
     const rewards = t('rewards');
     lastUnlocked = rewards.find(r => before < r.at && state.bananas >= r.at) || null;
+    if (before < MYSTERY_AT && state.bananas >= MYSTERY_AT) {
+      lastUnlocked = { title: t('mysteryName'), sub: t('mysteryUnlocked'), mystery: true };
+    }
     justAdded = true;
     save();
   }
@@ -146,7 +165,7 @@
     welcome() {
       return `
       <section class="welcome">
-        <div class="scene-bg">${ART.jungle}</div>
+        <div class="scene-bg">${ART.jungle(stage(state.bananas))}</div>
         <div class="welcome-card card">
           <img class="welcome-logo" src="assets/brand/forut-logo.png" alt="FORUT">
           <p class="kicker">${esc(t('welcomeKicker'))}</p>
@@ -166,36 +185,181 @@
 
     hub() {
       const friends = ['yanay', 'orbai', 'suala', 'palaiya'];
+      const left = Math.max(0, MYSTERY_AT - state.bananas);
+      const tile = (cls, go, art, title, sub) => `
+          <button class="tile ${cls}" data-go="${go}">
+            <span class="tile-art">${art}</span>
+            <b>${esc(title)}</b><small>${esc(sub)}</small>
+          </button>`;
       return `
       <section class="hub">
-        <div class="scene-bg">${ART.jungle}</div>
+        <div class="scene-bg">${ART.jungle(stage(state.bananas))}</div>
         <div class="hub-hero">
           <div class="bubble">${esc(t('hubGreeting'))}</div>
           <button class="monki-btn" id="monki-talk" aria-label="Monki">${monki('bob')}</button>
         </div>
+        <button class="tile tile-mission tile-wide" data-go="mission">
+          <span class="tile-art">${ART.items.boots}</span>
+          <span class="tile-text"><b>${esc(t('tileMission'))}</b><small>${esc(t('tileMissionSub'))}</small></span>
+        </button>
+        <p class="sec-label">${esc(t('secPlay'))}</p>
         <div class="tiles">
-          <button class="tile tile-mission" data-go="mission">
-            <span class="tile-art">${ART.items.boots}</span>
-            <b>${esc(t('tileMission'))}</b><small>${esc(t('tileMissionSub'))}</small>
-          </button>
-          <button class="tile tile-feel" data-go="feelings">
-            <span class="tile-art">${ART.face('happy')}</span>
-            <b>${esc(t('tileFeelings'))}</b><small>${esc(t('tileFeelingsSub'))}</small>
-          </button>
-          <button class="tile tile-tree" data-go="tree">
-            <span class="tile-art">${ART.bananaIcon}</span>
-            <b>${esc(t('tileTree'))}</b><small>${esc(t('tileTreeSub', { n: state.bananas, goal: GOAL }))}</small>
-          </button>
-          <button class="tile tile-parents" data-go="gate">
-            <span class="tile-art lock">${ART.icons.lock}</span>
-            <b>${esc(t('tileParents'))}</b><small>${esc(t('tileParentsSub'))}</small>
-          </button>
+          ${tile('tile-hunt', 'hunt', ART.hunt.leaf, t('tileHunt'), t('tileHuntSub'))}
+          ${tile('tile-songs', 'songs', ART.media.note, t('tileSongs'), t('tileSongsSub'))}
+        </div>
+        <p class="sec-label">${esc(t('secFeel'))}</p>
+        <div class="tiles">
+          ${tile('tile-feel', 'feelings', ART.face('happy'), t('tileFeelings'), t('tileFeelingsSub'))}
+          ${tile('tile-breathe', 'breathe', `<img src="assets/characters/palaiya.png" alt="">`, t('tileBreathe'), t('tileBreatheSub'))}
+        </div>
+        <p class="sec-label">${esc(t('secTogether'))}</p>
+        <div class="tiles">
+          ${tile('tile-tree', 'tree', ART.bananaIcon, t('tileTree'), t('tileTreeSub', { n: state.bananas, goal: GOAL }))}
+          ${tile('tile-parents', 'gate', `<span class="lock">${ART.icons.lock}</span>`, t('tileParents'), t('tileParentsSub'))}
         </div>
         <div class="friends card">
           <p class="kicker">${esc(t('friendsTitle'))}</p>
           <div class="friend-row">
             ${friends.map(f => `<button class="friend" data-friend="${f}" aria-label="${f}"><img src="assets/characters/${f}.png" alt="${f}"></button>`).join('')}
+            <button class="friend mystery ${left ? '' : 'open'}" id="mystery" aria-label="${esc(t('mysteryName'))}">
+              ${ART.silhouette}
+              <small>${esc(left ? t('mysteryLocked', { n: left }) : t('mysteryName'))}</small>
+            </button>
           </div>
+          <p class="fine stage-hint">${esc(t('stageHint'))}</p>
+        </div>
+      </section>`;
+    },
+
+    postcard() {
+      return `
+      <section class="postcard">
+        ${backBtn('hub')}
+        <div class="card center">
+          <p class="kicker">${ART.icons.globe}${esc(t('postcardTitle'))}</p>
+          <div class="postcard-art">${ART.nepal}<span class="postcard-friend">${ART.silhouette}</span></div>
+          <div class="bubble">${esc(t('postcardSay'))}</div>
+          <ul class="hints">${t('postcardHints').map(h => `<li>${ART.icons.star}<span>${esc(h)}</span></li>`).join('')}</ul>
+          <p>${esc(t('postcardBody'))}</p>
+          <p class="fine">${esc(t('postcardNote'))}</p>
+          <button class="btn primary big" data-go="hub">${esc(t('toHub'))}</button>
+        </div>
+      </section>`;
+    },
+
+    hunt() {
+      const keys = ['red', 'soft', 'round', 'leaf'];
+      const all = keys.every(k => huntFound[k]);
+      return `
+      <section class="hunt">
+        ${backBtn('hub')}
+        <div class="card center">
+          <h1>${esc(t('huntTitle'))}</h1>
+          <div class="bubble">${esc(t('huntSay'))}</div>
+          <div class="hunt-grid">
+            ${keys.map(k => `<button class="hunt-card ${huntFound[k] ? 'found' : ''}" data-hunt="${k}" aria-pressed="${!!huntFound[k]}">
+              ${ART.hunt[k]}<span>${esc(t('huntItems.' + k))}</span><i class="tick">${ART.icons.check}</i></button>`).join('')}
+          </div>
+          <p class="parent-note">${esc(t('huntParent'))}</p>
+          <label class="btn outline">
+            ${ART.icons.camera}<span>${esc(t('huntPhoto'))}</span>
+            <input type="file" accept="image/*" capture="environment" id="hunt-photo" hidden>
+          </label>
+          <p class="fine">${esc(t('huntPlayDay'))}</p>
+          <button class="btn primary big" id="hunt-done" ${all ? '' : 'disabled'}>${ART.icons.check}<span>${esc(t('huntDone'))}</span></button>
+        </div>
+      </section>`;
+    },
+
+    breathe() {
+      return `
+      <section class="breathe">
+        ${backBtn('hub')}
+        <div class="card center">
+          <h1>${esc(t('breatheTitle'))}</h1>
+          <div class="bubble">${esc(t('breatheSay'))}</div>
+          <div class="breath-stage">
+            <span class="breath-ring" id="ring"></span>
+            <img class="breath-palaiya" id="palaiya" src="assets/characters/palaiya.png" alt="Palaiya">
+          </div>
+          <p class="breath-word" id="breath-word">&nbsp;</p>
+          <p class="fine" id="breath-count">&nbsp;</p>
+          <button class="btn primary big" id="breath-start">${esc(t('breatheStart'))}</button>
+          <button class="btn primary big hidden" id="breath-done">${ART.icons.check}<span>${esc(t('breatheFinish'))}</span></button>
+          <p class="parent-note">${esc(t('breatheParent'))}</p>
+        </div>
+      </section>`;
+    },
+
+    songs() {
+      return `
+      <section class="songs">
+        ${backBtn('hub')}
+        <div class="card center">
+          <h1>${esc(t('songsTitle'))}</h1>
+          <div class="bubble">${esc(t('songsSay'))}</div>
+          <p class="promise-line">${ART.icons.check}${esc(t('songsPromise'))}</p>
+        </div>
+        <div class="song-list">
+          ${t('songs').map(sg => `
+          <button class="song-card" data-song="${sg.id}" style="--tint:${sg.color}">
+            <span class="song-art"><img src="assets/characters/${sg.char}.png" alt=""><i>${sg.kind === 'film' ? ART.media.film : ART.media.note}</i></span>
+            <span class="song-text"><b>${esc(sg.title)}</b><small>${esc(sg.sub)}</small>
+              ${sg.real ? '' : `<em>${esc(t('songsExample'))}</em>`}</span>
+            <span class="song-play">${ART.icons.play}</span>
+          </button>`).join('')}
+        </div>
+      </section>`;
+    },
+
+    song() {
+      const sg = t('songs').find(x => x.id === currentSong) || t('songs')[0];
+      const url = sg.url || 'https://www.youtube.com/results?search_query=FORUT+Barneaksjonen';
+      return `
+      <section class="song">
+        ${backBtn('songs')}
+        <div class="card center">
+          <div class="player" style="--tint:${sg.color}">
+            <img src="assets/characters/${sg.char}.png" alt="">
+            <a class="player-play" href="${url}" target="_blank" rel="noopener" aria-label="${esc(t('songPlay'))}">${ART.icons.play}</a>
+          </div>
+          <h1>${esc(sg.title)}</h1>
+          <p class="fine">${esc(t('songNote'))}</p>
+          <div class="after">
+            <p class="kicker">${esc(t('songAfterTitle'))}</p>
+            <div class="bubble">${esc(sg.after)}</div>
+            <button class="btn primary big" id="song-done">${ART.icons.check}<span>${esc(t('songAfterDone'))}</span></button>
+          </div>
+        </div>
+      </section>`;
+    },
+
+    night() {
+      return `
+      <section class="night">
+        <div class="scene-bg">${ART.jungle(stage(state.bananas), true)}</div>
+        <div class="card center night-card">
+          <h1>${esc(t('nightTitle'))}</h1>
+          <div class="bubble">${esc(t('nightSay'))}</div>
+          <div class="sleeper">${monki('asleep')}<span class="zzz"><i>z</i><i>z</i><i>z</i></span></div>
+          <p class="kicker">${ART.icons.moon}${esc(t('nightIdeas'))}</p>
+          <ul class="ideas">${t('nightIdeaList').map(i => `<li>${esc(i)}</li>`).join('')}</ul>
+          <p class="fine">${esc(t('nightBack'))}</p>
+          <button class="hold" id="hold"><span class="hold-fill"></span><span class="hold-label">${esc(t('nightParent'))}</span></button>
+        </div>
+      </section>`;
+    },
+
+    fridge() {
+      return `
+      <section class="fridge">
+        ${backBtn('tree')}
+        <div class="card center">
+          <h1>${esc(t('fridgeTitle'))}</h1>
+          <p>${esc(t('fridgeBody'))}</p>
+          <img class="fridge-img" id="fridge-img" alt="${esc(t('fridgeSheetTitle'))}">
+          <button class="btn primary big" id="fridge-print">${ART.icons.print}<span>${esc(t('fridgePrint'))}</span></button>
+          <p class="fine">${esc(t('fridgeSave'))}</p>
         </div>
       </section>`;
     },
@@ -269,7 +433,7 @@
       const unlocked = lastUnlocked;
       return `
       <section class="celebrate">
-        <div class="scene-bg">${ART.jungle}</div>
+        <div class="scene-bg">${ART.jungle(stage(state.bananas))}</div>
         <div class="card center">
           <h1>${esc(t('celebrateTitle'))}</h1>
           <div class="bubble">${esc(t('celebrateSay'))}</div>
@@ -279,7 +443,8 @@
           <div class="unlock">
             <span class="unlock-icon">${ART.icons.gift}</span>
             <div><p class="kicker">${esc(t('unlockTitle'))}</p><b>${esc(unlocked.title)}</b><small>${esc(unlocked.sub)}</small></div>
-          </div>` : ''}
+          </div>
+          ${unlocked.mystery ? `<button class="btn outline" data-go="postcard">${ART.icons.globe}<span>${esc(t('postcardTitle'))}</span></button>` : ''}` : ''}
           <button class="btn primary big" data-go="tree">${esc(t('toTree'))}</button>
           <button class="btn link" data-go="hub">${esc(t('toHub'))}</button>
         </div>
@@ -329,6 +494,15 @@
           </div>
           <p class="count">${esc(t('treeCount', { n: state.bananas, goal: GOAL }))}</p>
           <p class="fine">${esc(t('treeNoStreak'))}</p>
+          <button class="btn outline" data-go="fridge">${ART.icons.print}<span>${esc(t('fridgeOpen'))}</span></button>
+        </div>
+        <div class="card nation">
+          <p class="kicker">${ART.icons.globe}${esc(t('nationTitle'))}<em>${esc(t('nationNote'))}</em></p>
+          <p class="nation-total">${(NATION_BASE + state.bananas).toLocaleString(state.lang === 'no' ? 'nb-NO' : 'en-GB')}</p>
+          <p>${esc(t('nationBody', { mine: state.bananas }))}</p>
+          <div class="progress"><span style="width:${((NATION_BASE + state.bananas) / 1000000) * 100}%"></span></div>
+          <div class="nation-row"><small>${esc(t('nationGoal'))}</small><small>${esc(t('nationDays', { d: Math.round((PLAY_DAY - DEMO_DATE) / 86400000) }))}</small></div>
+          <p class="fine">${esc(t('nationPartner'))}</p>
         </div>
         <div class="card">
           <h2>${esc(t('rewardsTitle'))}</h2>
@@ -370,7 +544,7 @@
 
     parents() {
       const minutes = Math.max(1, Math.round(state.screenSeconds / 60));
-      const pct = Math.min(100, (minutes / SCREEN_MAX_MIN) * 100);
+      const pct = Math.min(100, (minutes / state.screenLimit) * 100);
       return `
       <section class="parents">
         ${backBtn('hub')}
@@ -386,7 +560,14 @@
         <div class="card">
           <h2>${esc(t('screenTitle'))}</h2>
           <div class="progress soft"><span style="width:${pct}%"></span></div>
-          <p class="fine">${esc(t('screenBody', { m: minutes, max: SCREEN_MAX_MIN }))}</p>
+          <p class="fine">${esc(t('screenBody', { m: minutes, max: state.screenLimit }))}</p>
+          <div class="limit-row">
+            <span>${esc(t('screenLimit'))}</span>
+            <div class="seg" role="group" aria-label="${esc(t('screenLimit'))}">
+              ${[5, 10, 15].map(m => `<button class="${state.screenLimit === m ? 'on' : ''}" data-limit="${m}" aria-pressed="${state.screenLimit === m}">${esc(t('minutes', { m }))}</button>`).join('')}
+            </div>
+          </div>
+          <button class="btn outline" id="night-demo">${ART.icons.moon}<span>${esc(t('nightDemo'))}</span></button>
         </div>
         <div class="card">
           <h2>${esc(t('photosTitle'))}</h2>
@@ -394,6 +575,7 @@
             ? `<div class="photos">${state.photos.map(p => `<img src="${p}" alt="">`).join('')}</div>`
             : `<p class="fine">${esc(t('photosEmpty'))}</p>`}
           <button class="btn outline" disabled>${ART.icons.gift}<span>${esc(t('orderPrint'))}</span></button>
+          <button class="btn outline" data-go="fridge">${ART.icons.print}<span>${esc(t('fridgeOpen'))}</span></button>
         </div>
         <div class="card">
           <h2>${esc(t('settingsTitle'))}</h2>
@@ -427,6 +609,93 @@
       $$('[data-friend]').forEach(b => {
         b.onclick = () => speak(t('friends.' + b.dataset.friend));
       });
+      $('#mystery').onclick = () => {
+        const left = MYSTERY_AT - state.bananas;
+        if (left > 0) speak(t('mysterySay', { n: left }));
+        else go('postcard');
+      };
+      const st = stage(state.bananas);
+      if (st > state.lastStage) {
+        state.lastStage = st; save();
+        later(() => speak(t('stageSay')[st]), 400);
+      }
+    },
+    postcard() { later(() => speak(t('postcardSay')), 200); },
+    hunt() {
+      later(() => speak(t('huntSay')), 200);
+      $$('[data-hunt]').forEach(b => {
+        b.onclick = () => {
+          const k = b.dataset.hunt;
+          huntFound[k] = !huntFound[k];
+          b.classList.toggle('found', huntFound[k]);
+          b.setAttribute('aria-pressed', huntFound[k]);
+          if (huntFound[k]) speak(t('huntFound.' + k));
+          $('#hunt-done').disabled = !['red', 'soft', 'round', 'leaf'].every(x => huntFound[x]);
+        };
+      });
+      $('#hunt-photo').onchange = e => {
+        const file = e.target.files && e.target.files[0];
+        if (file) readPhoto(file, url => { state.photos.push(url); save(); });
+      };
+      $('#hunt-done').onclick = () => {
+        huntFound = {};
+        state.missionsWeek += 1;
+        addBanana();
+        go('celebrate');
+      };
+    },
+    breathe() {
+      later(() => speak(t('breatheSay')), 200);
+      const TOTAL = 3, HALF = 4000;
+      $('#breath-start').onclick = () => {
+        $('#breath-start').classList.add('hidden');
+        let n = 0;
+        const circle = $('.breath-stage');
+        const step = () => {
+          n += 1;
+          $('#breath-count').textContent = t('breatheCount', { n, total: TOTAL });
+          $('#breath-word').textContent = t('breatheIn');
+          circle.classList.remove('out'); circle.classList.add('in');
+          speak(t('breatheIn'));
+          later(() => {
+            $('#breath-word').textContent = t('breatheOut');
+            circle.classList.remove('in'); circle.classList.add('out');
+            speak(t('breatheOut'));
+            later(() => {
+              if (n < TOTAL) return step();
+              circle.classList.remove('out');
+              $('#breath-word').textContent = '';
+              $('#breath-count').textContent = '';
+              speak(t('breatheDone'));
+              $('#breath-done').classList.remove('hidden');
+            }, HALF);
+          }, HALF);
+        };
+        step();
+      };
+      $('#breath-done').onclick = () => {
+        state.feelingsWeek += 1;
+        addBanana();
+        go('celebrate');
+      };
+    },
+    songs() {
+      later(() => speak(t('songsSay')), 200);
+      $$('[data-song]').forEach(b => { b.onclick = () => { currentSong = b.dataset.song; go('song'); }; });
+    },
+    song() {
+      const sg = t('songs').find(x => x.id === currentSong) || t('songs')[0];
+      $('.player-play').addEventListener('click', () => later(() => speak(sg.after), 600));
+      $('#song-done').onclick = () => { addBanana(); go('celebrate'); };
+    },
+    night() {
+      try { speechSynthesis.cancel(); } catch (e) {}
+      later(() => speak(t('nightSay')), 300);
+      holdToOpen(() => { state.nightOverride = true; save(); go('hub'); });
+    },
+    fridge() {
+      drawFridge(url => { const img = $('#fridge-img'); if (img) img.src = url; });
+      $('#fridge-print').onclick = () => { try { window.print(); } catch (e) {} };
     },
     mission() { setTimeout(() => speak(t('missionSay')), 200); },
     game() { setupGame(); setTimeout(() => speak(t('gameSay')), 200); },
@@ -465,22 +734,16 @@
       };
     },
     tree() { setTimeout(() => speak(t('treeSay')), 200); },
-    gate() {
-      const btn = $('#hold');
-      let timer = null;
-      const start = e => {
-        e.preventDefault();
-        btn.classList.add('holding');
-        timer = setTimeout(() => go('parents'), 3000);
-      };
-      const stop = () => { btn.classList.remove('holding'); clearTimeout(timer); };
-      btn.addEventListener('pointerdown', start);
-      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
-    },
+    gate() { holdToOpen(() => go('parents')); },
     parents() {
       $('#set-reminder').onchange = e => { state.reminder = e.target.checked; save(); };
       $('#set-sound').onchange = e => { state.sound = e.target.checked; save(); renderTopbar(); bindGlobal(); };
+      $$('[data-limit]').forEach(b => {
+        b.onclick = () => { state.screenLimit = Number(b.dataset.limit); state.nightOverride = false; save(); render(); };
+      });
+      $('#night-demo').onclick = () => go('night');
       $('#reset').onclick = () => {
+        huntFound = {};
         state = JSON.parse(JSON.stringify(DEFAULT_STATE));
         save();
         go('welcome');
@@ -566,6 +829,74 @@
     }
   }
 
+  // Grown-up gate: press and hold for 3 seconds.
+  function holdToOpen(onOpen) {
+    const btn = $('#hold');
+    let timer = null;
+    const start = e => {
+      e.preventDefault();
+      btn.classList.add('holding');
+      timer = setTimeout(onOpen, 3000);
+    };
+    const stop = () => { btn.classList.remove('holding'); clearTimeout(timer); };
+    btn.addEventListener('pointerdown', start);
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => btn.addEventListener(ev, stop));
+  }
+
+  // Printable A4 banana calendar, drawn on a canvas so it can be printed or saved as an image.
+  function drawFridge(cb) {
+    const W = 1240, H = 1754, M = 90;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    const display = "800 {s}px 'Baloo 2', Nunito, sans-serif";
+    const body = "700 {s}px Nunito, system-ui, sans-serif";
+    const font = (tpl, size) => tpl.replace('{s}', size);
+    const img = new Image();
+    const draw = () => {
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+      g.strokeStyle = '#2b2b2b'; g.lineWidth = 8;
+      g.beginPath(); g.roundRect(40, 40, W - 80, H - 80, 48); g.stroke();
+      if (img.complete && img.naturalWidth) {
+        const h = 330, w = img.naturalWidth * h / img.naturalHeight;
+        g.drawImage(img, W - M - w, 90, w, h);
+      }
+      g.fillStyle = '#1b62b3';
+      g.font = font(display, 92); g.fillText(t('fridgeSheetTitle'), M, 200);
+      g.fillStyle = '#2c7a3b';
+      g.font = font(body, 44); g.fillText(t('treeMonth') + ' 2027', M, 270);
+      g.fillStyle = '#23303b';
+      g.font = font(body, 36); g.fillText(t('fridgeSheetBody'), M, 490);
+
+      const top = 600, cols = 7, cw = (W - 2 * M) / cols, ch = 190;
+      g.font = font(body, 32); g.fillStyle = '#5d6b78'; g.textAlign = 'center';
+      t('weekdays').forEach((w, i) => g.fillText(w, M + cw * i + cw / 2, top - 20));
+      const banana = new Path2D('M4 6 Q8 30 34 34 Q42 34 44 30 Q22 28 12 4Z');
+      for (let d = 1; d <= DAYS_IN_MONTH; d++) {
+        const idx = d - 1 + MONTH_OFFSET, col = idx % cols, row = Math.floor(idx / cols);
+        const x = M + col * cw, y = top + row * ch;
+        g.fillStyle = '#f4f8f5'; g.strokeStyle = '#cfdcd2'; g.lineWidth = 3;
+        g.beginPath(); g.roundRect(x + 8, y + 8, cw - 16, ch - 16, 22); g.fill(); g.stroke();
+        g.fillStyle = '#23303b'; g.textAlign = 'left'; g.font = font(body, 30);
+        g.fillText(String(d), x + 24, y + 50);
+        g.save();
+        g.translate(x + cw / 2 - 44, y + 74); g.scale(2, 2);
+        g.lineWidth = 1.6; g.strokeStyle = '#2b2b2b'; g.setLineDash([3, 2.5]);
+        g.stroke(banana);
+        g.restore();
+      }
+      g.textAlign = 'center'; g.fillStyle = '#5d6b78'; g.font = font(body, 30);
+      g.fillText(t('fridgeSheetFoot'), W / 2, H - 90);
+      g.textAlign = 'left';
+      cb(c.toDataURL('image/png'));
+    };
+    img.onload = draw;
+    img.onerror = draw;
+    img.src = 'assets/characters/monki.png';
+    // Draw again once web fonts are ready so the sheet uses the brand faces.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (screen === 'fridge') draw(); });
+  }
+
   function readPhoto(file, cb) {
     const reader = new FileReader();
     reader.onload = () => {
@@ -618,6 +949,8 @@
     if (document.visibilityState === 'visible') {
       state.screenSeconds += 1;
       if (state.screenSeconds % 10 === 0) save();
+      const exempt = ['night', 'gate', 'parents', 'welcome'];
+      if (!state.nightOverride && state.screenSeconds >= state.screenLimit * 60 && !exempt.includes(screen)) go('night');
     }
   }, 1000);
 

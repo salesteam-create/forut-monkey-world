@@ -127,6 +127,103 @@ window.I18N = {
       'Vi samler så lite data som mulig.'
     ],
     resetDemo: 'Nullstill demo',
+    // Hub sections and new tiles
+    secPlay: 'Lek',
+    secFeel: 'Følelser',
+    secTogether: 'Sammen',
+    tileHunt: 'Skattejakt',
+    tileHuntSub: 'Finn ting ute',
+    tileBreathe: 'Pust med Palaiya',
+    tileBreatheSub: 'Rolig pust',
+    tileSongs: 'Sanger og filmer',
+    tileSongsSub: 'Uten reklame',
+
+    // Growing jungle
+    stageSay: [
+      '',
+      'Se! Det har vokst blomster i jungelen!',
+      'Se! Sommerfuglene har kommet!',
+      'Se! En fugl har flyttet inn i jungelen!',
+      'Se! Nå har vi fått en foss!'
+    ],
+    stageHint: 'Jungelen vokser når dere samler bananer',
+
+    // Mystery friend
+    mysteryName: 'Hemmelig venn',
+    mysteryLocked: '{n} bananer til',
+    mysterySay: 'Noen vil hilse på deg! Samle {n} bananer til, så får du et postkort.',
+    mysteryUnlocked: 'Et postkort fra Nepal',
+    postcardTitle: 'Et postkort fra Nepal',
+    postcardSay: 'Namaste! Jeg bor høyt oppe i fjellene i Nepal. Høsten 2027 blir vi kjent. Kan du gjette hvem jeg er?',
+    postcardBody: 'Monkis nye venn blir presentert når Barneaksjonen reiser til Nepal. Til da kan dere gjette sammen.',
+    postcardHints: ['Jeg bor høyt oppe i fjellene', 'Jeg liker å snakke om følelser', 'Namaste betyr hei'],
+    postcardNote: 'Plassholder: FORUT lager den nye figuren.',
+
+    // National tree
+    nationTitle: 'Hele Norges bananatre',
+    nationBody: 'Bananer samlet av familier i hele landet. Deres {mine} er med!',
+    nationGoal: 'Mål: 1 million bananer til Lekedagen',
+    nationDays: '{d} dager til Lekedagen 11. juni',
+    nationPartner: 'Idé: en partner gir 1 krone per banan til barn i Nepal.',
+    nationNote: 'Eksempeltall',
+
+    // Goodnight ritual
+    nightTitle: 'God natt, Monki!',
+    nightSay: 'Jeg er så trøtt nå. Takk for i dag! Nå kan dere leke sammen uten skjerm. Vi ses i morgen!',
+    nightIdeas: 'Forslag til noe å gjøre nå',
+    nightIdeaList: ['Les en bok sammen', 'Tegn noe dere gjorde i dag', 'Gå en liten tur ute'],
+    nightBack: 'Monki våkner igjen i morgen.',
+    nightParent: 'For voksne: hold for å fortsette',
+    nightDemo: 'Vis godnatt nå (demo)',
+    screenLimit: 'Skjermtidsgrense',
+    minutes: '{m} min',
+
+    // Fridge chart
+    fridgeTitle: 'Bananatreet til kjøleskapet',
+    fridgeBody: 'Skriv ut arket og heng det på kjøleskapet. Fargelegg en banan hver gang dere gjør et oppdrag sammen.',
+    fridgePrint: 'Skriv ut',
+    fridgeSave: 'Du kan også holde fingeren på bildet for å lagre det.',
+    fridgeOpen: 'Bananatre til kjøleskapet',
+    fridgeSheetTitle: 'Monkis bananatre',
+    fridgeSheetBody: 'Fargelegg en banan hver dag dere gjør noe sammen!',
+    fridgeSheetFoot: 'Monkis verden · FORUT Barneaksjonen',
+
+    // Treasure hunt
+    huntTitle: 'Skattejakt',
+    huntSay: 'Skattejakt! Gå ut sammen og finn noe rødt, noe mykt, noe rundt og et blad. Trykk når du har funnet det!',
+    huntItems: { red: 'Noe rødt', soft: 'Noe mykt', round: 'Noe rundt', leaf: 'Et blad' },
+    huntFound: { red: 'Du fant noe rødt!', soft: 'Så mykt!', round: 'Rundt som en ball!', leaf: 'For et fint blad!' },
+    huntParent: 'For den voksne: Gå ut sammen. Barnet trykker på hver ting når dere finner den.',
+    huntPhoto: 'Ta et bilde av skatten',
+    huntDone: 'Vi fant alt!',
+    huntPlayDay: 'Bildene kan brukes på Lekedagen 11. juni.',
+
+    // Breathing
+    breatheTitle: 'Pust med Palaiya',
+    breatheSay: 'Hei, jeg er Palaiya. Når kroppen er urolig, kan vi puste sakte sammen. Er du klar?',
+    breatheStart: 'Start',
+    breatheIn: 'Pust inn',
+    breatheOut: 'Pust ut',
+    breatheCount: 'Pust {n} av {total}',
+    breatheDone: 'Så rolig du er nå. Bra pustet!',
+    breatheFinish: 'Vi pustet sammen',
+    breatheParent: 'Tips: Legg en hånd på magen og kjenn at den går opp og ned.',
+
+    // Songs and films
+    songsTitle: 'Sanger og filmer',
+    songsSay: 'Her er sanger og filmer fra FORUT. Hva vil du se?',
+    songsPromise: 'Ingen reklame, ingen autoavspilling og ingen anbefalinger.',
+    songs: [
+      { id: 'lekedag', kind: 'film', title: 'Lekedagen 2026', sub: 'Film fra FORUT', url: 'https://youtu.be/pqjayw6v-ZA', color: '#ffe1ea', char: 'monki', real: true, after: 'Hva er din drømmelek? Tegn den sammen!' },
+      { id: 'monkisang', kind: 'song', title: 'Monki-sangen', sub: 'Sang', color: '#fff4c7', char: 'monki', after: 'Syng sangen en gang til, uten skjerm!' },
+      { id: 'yanaydans', kind: 'song', title: 'Dans med Yanay', sub: 'Sang og dans', color: '#e3eefc', char: 'yanay', after: 'Stamp med føttene som en elefant!' },
+      { id: 'suala', kind: 'film', title: 'Suala og stjernene', sub: 'Godnatthistorie', color: '#dff5d8', char: 'suala', after: 'Se ut av vinduet. Ser dere noen stjerner?' }
+    ],
+    songsExample: 'Eksempel',
+    songPlay: 'Spill av',
+    songNote: 'I den ferdige løsningen spilles innholdet av her, uten reklame og uten forslag til neste video. I prototypen åpnes FORUTs YouTube.',
+    songAfterTitle: 'Etterpå',
+    songAfterDone: 'Vi gjorde det',
     resetDone: 'Demoen er nullstilt'
   },
 
@@ -256,6 +353,94 @@ window.I18N = {
       'We collect as little data as possible.'
     ],
     resetDemo: 'Reset demo',
+    secPlay: 'Play',
+    secFeel: 'Feelings',
+    secTogether: 'Together',
+    tileHunt: 'Treasure hunt',
+    tileHuntSub: 'Find things outside',
+    tileBreathe: 'Breathe with Palaiya',
+    tileBreatheSub: 'Calm breathing',
+    tileSongs: 'Songs and films',
+    tileSongsSub: 'No ads',
+
+    stageSay: [
+      '',
+      'Look! Flowers are growing in the jungle!',
+      'Look! The butterflies have arrived!',
+      'Look! A bird has moved into the jungle!',
+      'Look! Now we have a waterfall!'
+    ],
+    stageHint: 'The jungle grows as you collect bananas',
+
+    mysteryName: 'Secret friend',
+    mysteryLocked: '{n} bananas to go',
+    mysterySay: 'Someone wants to say hello! Collect {n} more bananas and you will get a postcard.',
+    mysteryUnlocked: 'A postcard from Nepal',
+    postcardTitle: 'A postcard from Nepal',
+    postcardSay: 'Namaste! I live high up in the mountains of Nepal. In autumn 2027 we will get to know each other. Can you guess who I am?',
+    postcardBody: "Monki's new friend is revealed when Barneaksjonen travels to Nepal. Until then, you can guess together.",
+    postcardHints: ['I live high up in the mountains', 'I like talking about feelings', 'Namaste means hello'],
+    postcardNote: 'Placeholder: FORUT creates the new character.',
+
+    nationTitle: "All of Norway's banana tree",
+    nationBody: 'Bananas collected by families across the country. Your {mine} are included!',
+    nationGoal: 'Goal: 1 million bananas by Play Day',
+    nationDays: '{d} days to Play Day on 11 June',
+    nationPartner: 'Idea: a partner gives 1 krone per banana to children in Nepal.',
+    nationNote: 'Example figures',
+
+    nightTitle: 'Good night, Monki!',
+    nightSay: "I'm so sleepy now. Thank you for today! Now you can play together without a screen. See you tomorrow!",
+    nightIdeas: 'Ideas for what to do now',
+    nightIdeaList: ['Read a book together', 'Draw something you did today', 'Go for a short walk outside'],
+    nightBack: 'Monki wakes up again tomorrow.',
+    nightParent: 'For grown-ups: hold to continue',
+    nightDemo: 'Show goodnight now (demo)',
+    screenLimit: 'Screen time limit',
+    minutes: '{m} min',
+
+    fridgeTitle: 'Banana tree for the fridge',
+    fridgeBody: 'Print the sheet and put it on the fridge. Colour in a banana every time you do a mission together.',
+    fridgePrint: 'Print',
+    fridgeSave: 'You can also press and hold the image to save it.',
+    fridgeOpen: 'Banana tree for the fridge',
+    fridgeSheetTitle: "Monki's banana tree",
+    fridgeSheetBody: 'Colour in a banana every day you do something together!',
+    fridgeSheetFoot: "Monki's World · FORUT Barneaksjonen",
+
+    huntTitle: 'Treasure hunt',
+    huntSay: 'Treasure hunt! Go outside together and find something red, something soft, something round and a leaf. Tap when you find it!',
+    huntItems: { red: 'Something red', soft: 'Something soft', round: 'Something round', leaf: 'A leaf' },
+    huntFound: { red: 'You found something red!', soft: 'So soft!', round: 'Round like a ball!', leaf: 'What a nice leaf!' },
+    huntParent: 'For the grown-up: go outside together. The child taps each thing when you find it.',
+    huntPhoto: 'Take a photo of the treasure',
+    huntDone: 'We found everything!',
+    huntPlayDay: 'The photos can be used on Play Day, 11 June.',
+
+    breatheTitle: 'Breathe with Palaiya',
+    breatheSay: "Hi, I'm Palaiya. When your body feels restless, we can breathe slowly together. Are you ready?",
+    breatheStart: 'Start',
+    breatheIn: 'Breathe in',
+    breatheOut: 'Breathe out',
+    breatheCount: 'Breath {n} of {total}',
+    breatheDone: 'You are so calm now. Well breathed!',
+    breatheFinish: 'We breathed together',
+    breatheParent: 'Tip: put a hand on the tummy and feel it go up and down.',
+
+    songsTitle: 'Songs and films',
+    songsSay: 'Here are songs and films from FORUT. What would you like to watch?',
+    songsPromise: 'No ads, no autoplay and no recommendations.',
+    songs: [
+      { id: 'lekedag', kind: 'film', title: 'Play Day 2026', sub: 'Film from FORUT', url: 'https://youtu.be/pqjayw6v-ZA', color: '#ffe1ea', char: 'monki', real: true, after: 'What is your dream play? Draw it together!' },
+      { id: 'monkisang', kind: 'song', title: 'The Monki song', sub: 'Song', color: '#fff4c7', char: 'monki', after: 'Sing the song once more, without the screen!' },
+      { id: 'yanaydans', kind: 'song', title: 'Dance with Yanay', sub: 'Song and dance', color: '#e3eefc', char: 'yanay', after: 'Stomp your feet like an elephant!' },
+      { id: 'suala', kind: 'film', title: 'Suala and the stars', sub: 'Bedtime story', color: '#dff5d8', char: 'suala', after: 'Look out of the window. Can you see any stars?' }
+    ],
+    songsExample: 'Example',
+    songPlay: 'Play',
+    songNote: "In the finished platform the content plays here, with no ads and no next-video suggestions. In the prototype it opens FORUT's YouTube.",
+    songAfterTitle: 'Afterwards',
+    songAfterDone: 'We did it',
     resetDone: 'The demo has been reset'
   }
 };

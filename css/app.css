@@ -301,3 +301,116 @@ button:focus-visible, .btn:focus-visible { outline: 3px solid var(--blue); outli
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- v1.1 additions ---------- */
+
+/* Hub sections */
+.sec-label { display: inline-block; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 16px; color: var(--ink); background: rgba(255,255,255,.92); border-radius: 999px; padding: 2px 14px; margin: 2px 0 8px; }
+.tile-wide { flex-direction: row; align-items: center; gap: 14px; width: 100%; min-height: 0; margin-bottom: 14px; }
+.tile-wide .tile-art { width: 84px; height: 70px; }
+.tile-wide .tile-text { display: flex; flex-direction: column; }
+.tile-wide b { font-size: 23px; margin: 0; }
+.tile-hunt { background: #ffe9d6; }
+.tile-songs { background: #efe4ff; }
+.tile-breathe { background: #e0f4ef; }
+.tile-art img { max-height: 100%; width: auto; }
+.tile-art .lock { color: var(--blue); width: 44px; display: block; }
+.stage-hint { margin: 10px 0 0; text-align: center; }
+.flutter g { animation: flutter 3s ease-in-out infinite; transform-box: fill-box; }
+.flutter g + g { animation-delay: -1.4s; }
+@keyframes flutter { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(8px, -10px); } }
+
+/* Mystery friend */
+.friend.mystery { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.friend.mystery svg { width: 56px; height: 56px; }
+.friend.mystery small { font-size: 11px; font-weight: 800; color: var(--muted); white-space: nowrap; }
+.friend.mystery.open svg { animation: pop 1s ease infinite alternate; }
+.friend.mystery.open small { color: var(--leaf-dark); }
+.postcard-art { position: relative; border: 3px solid var(--ink); border-radius: 18px; overflow: hidden; margin-bottom: 14px; }
+.postcard-art svg { width: 100%; height: auto; }
+.postcard-friend { position: absolute; right: 12px; bottom: 6px; width: 34%; }
+.postcard-friend svg { width: 100%; height: auto; animation: bob 2.4s ease-in-out infinite; }
+.hints { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 6px; text-align: left; }
+.hints li { display: flex; gap: 8px; align-items: center; background: #fff4c7; border-radius: 12px; padding: 8px 12px; font-weight: 700; }
+.hints svg { width: 18px; height: 18px; color: var(--banana-dark); flex: none; }
+
+/* National tree */
+.nation .kicker { justify-content: flex-start; }
+.nation .kicker svg { color: var(--blue); }
+.nation .kicker em { margin-left: auto; font-style: normal; font-size: 11px; background: #eef2f5; color: var(--muted); border-radius: 999px; padding: 2px 8px; letter-spacing: 0; text-transform: none; }
+.nation-total { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 44px; line-height: 1; color: var(--leaf-dark); margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+.nation-row { display: flex; justify-content: space-between; gap: 8px; margin: 6px 0 10px; font-weight: 700; color: var(--muted); flex-wrap: wrap; }
+
+/* Treasure hunt */
+.hunt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.hunt-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; background: #f6f8fa; border: 3px solid transparent; border-radius: 18px; padding: 12px 8px; font-weight: 800; transition: transform .12s; }
+.hunt-card svg { width: 64px; height: 64px; }
+.hunt-card .tick { position: absolute; top: 8px; right: 8px; width: 28px; height: 28px; border-radius: 50%; background: var(--leaf); color: #fff; display: none; place-items: center; }
+.hunt-card .tick svg { width: 18px; height: 18px; }
+.hunt-card.found { border-color: var(--leaf); background: #eaf7ee; }
+.hunt-card.found .tick { display: grid; animation: pop .35s ease; }
+.btn.primary[disabled] { opacity: .45; box-shadow: none; cursor: default; }
+
+/* Breathing */
+.breath-stage { position: relative; width: 220px; height: 220px; margin: 4px auto 8px; display: grid; place-items: center; }
+.breath-ring { position: absolute; inset: 30px; border-radius: 50%; background: #d7f0e6; border: 3px solid #69a297; transform: scale(.75); transition: transform 4s ease-in-out; }
+.breath-palaiya { position: relative; width: 150px; height: auto; transition: transform 4s ease-in-out; }
+.breath-stage.in .breath-ring { transform: scale(1.2); }
+.breath-stage.in .breath-palaiya { transform: scale(1.12); }
+.breath-stage.out .breath-ring { transform: scale(.75); }
+.breath-word { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 30px; color: #3f7f74; min-height: 36px; margin: 0; }
+
+/* Songs and films */
+.promise-line { display: flex; align-items: center; justify-content: center; gap: 6px; font-weight: 800; color: var(--leaf-dark); font-size: 14px; margin: 0; }
+.promise-line svg { width: 18px; height: 18px; flex: none; }
+.song-list { display: grid; gap: 10px; }
+.song-card { display: flex; align-items: center; gap: 12px; background: var(--card); border: 0; border-radius: var(--radius); padding: 10px 14px 10px 10px; box-shadow: var(--shadow); text-align: left; }
+.song-art { position: relative; flex: none; width: 76px; height: 64px; border-radius: 16px; background: var(--tint); display: grid; place-items: center; }
+.song-art img { max-height: 54px; width: auto; }
+.song-art i { position: absolute; right: -6px; bottom: -6px; width: 28px; height: 28px; background: #fff; border-radius: 50%; padding: 3px; box-shadow: 0 2px 0 rgba(0,0,0,.12); }
+.song-art i svg { width: 100%; height: 100%; }
+.song-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.song-text b { font-family: 'Baloo 2', sans-serif; font-size: 18px; line-height: 1.15; }
+.song-text small { color: var(--muted); font-weight: 700; }
+.song-text em { align-self: flex-start; font-style: normal; font-size: 11px; font-weight: 800; background: #eef2f5; color: var(--muted); border-radius: 999px; padding: 1px 8px; margin-top: 3px; }
+.song-play { flex: none; width: 40px; height: 40px; border-radius: 50%; background: var(--banana); display: grid; place-items: center; }
+.song-play svg { width: 20px; height: 20px; }
+.player { position: relative; aspect-ratio: 16 / 10; max-width: 100%; border-radius: 18px; background: var(--tint); border: 3px solid var(--ink); display: grid; place-items: center; margin-bottom: 12px; }
+.player img { max-height: 70%; width: auto; }
+.player-play { position: absolute; width: 72px; height: 72px; border-radius: 50%; background: var(--banana); border: 3px solid var(--ink); display: grid; place-items: center; color: var(--ink); box-shadow: 0 5px 0 var(--banana-dark); }
+.player-play svg { width: 34px; height: 34px; margin-left: 4px; }
+.after { background: #f6f8fa; border-radius: 16px; padding: 14px; margin-top: 10px; }
+
+/* Goodnight */
+.screen-night { padding-top: 0; }
+.screen-night section { min-height: 100%; padding-top: 16px; }
+.screen-night .scene-bg { position: fixed; }
+@media (min-width: 600px) { .screen-night .scene-bg { position: absolute; inset: -16px; } }
+.night-card { margin-top: 20px; background: #f3f5ff; }
+.sleeper { position: relative; height: 120px; display: grid; place-items: center; margin-bottom: 8px; }
+.monki.asleep { height: 150px; transform: rotate(-80deg); animation: none; }
+.zzz { position: absolute; right: 22%; top: 0; font-family: 'Baloo 2', sans-serif; font-weight: 800; color: var(--blue); }
+.zzz i { display: inline-block; font-style: normal; font-size: 26px; animation: zzz 2.4s ease-in-out infinite; opacity: 0; }
+.zzz i:nth-child(2) { animation-delay: .8s; font-size: 20px; }
+.zzz i:nth-child(3) { animation-delay: 1.6s; font-size: 16px; }
+@keyframes zzz { 0% { opacity: 0; transform: translateY(10px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translateY(-24px); } }
+.night-card .kicker { color: var(--blue-dark); }
+.night-card .kicker svg { color: var(--blue); }
+.ideas { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 6px; }
+.ideas li { background: #fff; border-radius: 12px; padding: 10px; font-weight: 800; }
+
+/* Parents extras */
+.limit-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 4px 0 10px; font-weight: 700; }
+.seg { display: inline-flex; border: 2px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: #fff; padding: 6px 12px; font-weight: 800; font-size: 14px; }
+.seg button.on { background: var(--leaf); color: #fff; }
+.card .btn.outline { width: 100%; }
+
+/* Fridge chart */
+.fridge-img { width: 100%; max-width: 100%; border-radius: 10px; box-shadow: var(--shadow); margin: 6px 0 12px; background: #fff; aspect-ratio: 1240 / 1754; }
+@media print {
+  body * { visibility: hidden; }
+  .fridge-img, .fridge-img * { visibility: visible; }
+  .fridge-img { position: fixed; inset: 0; width: 100%; height: auto; box-shadow: none; border-radius: 0; }
+  .device { border: 0; box-shadow: none; }
+}
