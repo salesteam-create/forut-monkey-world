@@ -196,30 +196,112 @@
   }
   const bananaIcon = `<svg viewBox="0 0 48 40" aria-hidden="true">${banana(true)}</svg>`;
 
-  // Banana tree with `goal` slots in hanging bunches, `n` filled.
+  // Banana tree with `goal` slots, `n` filled. A banana plant in the FORUT outline style:
+  // paddle leaves, a striped trunk, and bunches on stalks ending in the purple banana flower.
   function tree(n, goal, justAdded) {
-    // Four bunches of six hanging under the crown.
-    const bunches = [[118, 150], [172, 172], [236, 172], [290, 150]];
-    let bananas = '';
-    for (let i = 0; i < goal; i++) {
-      const [bx, by] = bunches[Math.floor(i / 6) % bunches.length];
-      const k = i % 6, col = k % 2, row = Math.floor(k / 2);
-      const x = bx - 26 + col * 24, y = by + row * 24;
-      const inner = `<g transform="rotate(${col ? 20 : -14} 22 18) scale(.7)">${banana(i < n)}</g>`;
-      // The pop animation sits on its own group so it does not override the positioning transform.
-      bananas += `<g transform="translate(${x} ${y})">${justAdded && i === n - 1 ? `<g class="pop">${inner}</g>` : inner}</g>`;
+    const W = 400, H = 460, cx = 204, crownY = 150;
+
+    // A banana in local coordinates (about 44 x 36), curving up and out.
+    function fruit(filled, fresh) {
+      if (!filled) {
+        return `<path d="M2 8 C4 26 20 34 38 28 L41 23 C25 28 11 22 8 5Z" fill="rgba(255,255,255,.7)" stroke="#7a9a6c" stroke-width="2" stroke-dasharray="4 3" stroke-linejoin="round"/>`;
+      }
+      return `<g${fresh ? ' class="fresh"' : ''}>
+        <path d="M2 8 C4 26 20 34 38 28 L41 23 C25 28 11 22 8 5Z" fill="#ffd23f" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>
+        <path d="M9 13 C13 23 21 27 31 27" fill="none" stroke="#fff3a6" stroke-width="3" stroke-linecap="round"/>
+        <path d="M2 8 L8 5" stroke="#6b4b2a" stroke-width="4" stroke-linecap="round"/>
+        <circle cx="40" cy="25.5" r="2.2" fill="#6b4b2a"/>
+      </g>`;
     }
-    return `<svg viewBox="0 0 400 420" aria-hidden="true">
-      <path d="M180 420 Q190 300 196 150 H212 Q214 300 232 420Z" fill="#9b6b3c" ${s}/>
-      <g ${s} fill="#3f9b4f">
-        <path d="M204 120 Q120 40 30 90 Q110 80 204 140Z"/>
-        <path d="M204 120 Q290 40 380 90 Q300 80 204 140Z" fill="#4fae5c"/>
-        <path d="M204 120 Q150 20 110 10 Q160 60 196 130Z" fill="#4fae5c"/>
-        <path d="M204 120 Q270 10 320 20 Q250 60 212 130Z"/>
-        <path d="M204 130 Q90 130 40 200 Q120 150 204 150Z" fill="#5fbf6b"/>
-        <path d="M204 130 Q320 130 370 200 Q290 150 204 150Z" fill="#5fbf6b"/>
-      </g>
-      ${bananas}
+
+    // Leaves radiate from the crown: [angle in degrees, length, width, tone]
+    const leaves = [
+      [-168, 170, 34, 0], [-12, 170, 34, 0],
+      [-148, 175, 38, 1], [-32, 175, 38, 1],
+      [-120, 150, 34, 0], [-60, 150, 34, 0],
+      [-92, 130, 30, 1],
+      [-190, 130, 28, 1], [10, 130, 28, 1]
+    ];
+    const tones = [['#3f9b4f', '#58b765'], ['#4fae5c', '#6fc97a']];
+    const leaf = ([ang, L, Wd, tone]) => {
+      const [dark, light] = tones[tone];
+      return `<g transform="translate(${cx} ${crownY}) rotate(${ang})">
+        <path d="M0 0 C${L * .25} ${-Wd} ${L * .8} ${-Wd * .95} ${L} 0 C${L * .8} ${Wd * .75} ${L * .25} ${Wd * .8} 0 0Z" fill="${dark}" ${s}/>
+        <path d="M4 -2 C${L * .28} ${-Wd * .9} ${L * .78} ${-Wd * .85} ${L - 6} -2Z" fill="${light}"/>
+        <path d="M0 0 Q${L / 2} ${-Wd * .12} ${L - 4} 0" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/>
+        ${[.3, .5, .7].map(t => `<path d="M${L * t} ${-Wd * .06} L${L * t + 14} ${-Wd * .62}" stroke="${INK}" stroke-width="1.2" opacity=".35"/>`).join('')}
+      </g>`;
+    };
+
+    // Four bunches of six, hanging from the crown on curved stalks.
+    const bunches = [[88, 200], [150, 278], [260, 278], [322, 200]];
+    const perBunch = Math.ceil(goal / bunches.length);
+    let bunchSvg = '';
+    let sparkle = '';
+    bunches.forEach(([bx, by], bi) => {
+      const rows = Math.ceil(perBunch / 2);
+      const bottom = by + rows * 22 + 12;
+      let fruits = '';
+      for (let k = 0; k < perBunch; k++) {
+        const i = bi * perBunch + k;
+        if (i >= goal) break;
+        const row = Math.floor(k / 2), right = k % 2 === 1;
+        const y = by + row * 22;
+        const filled = i < n, fresh = justAdded && i === n - 1;
+        const tf = right
+          ? `translate(${bx + 2} ${y}) rotate(${-8 + row * 6})`
+          : `translate(${bx - 2} ${y}) scale(-1 1) rotate(${-8 + row * 6})`;
+        fruits += `<g transform="${tf}">${fruit(filled, fresh)}</g>`;
+        if (fresh) {
+          const sx = right ? bx + 46 : bx - 46;
+          sparkle = `<g transform="translate(${sx} ${y + 6})"><g class="sparkle">
+            <path d="M0 -14 L3 -3 L14 0 L3 3 L0 14 L-3 3 L-14 0 L-3 -3Z" fill="#fff" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/>
+          </g></g>`;
+        }
+      }
+      bunchSvg += `
+        <path d="M${cx} ${crownY + 8} Q${(cx + bx) / 2} ${crownY + 10} ${bx} ${by - 16}" fill="none" stroke="#6b8f3a" stroke-width="6" stroke-linecap="round"/>
+        <path d="M${cx} ${crownY + 8} Q${(cx + bx) / 2} ${crownY + 10} ${bx} ${by - 16}" fill="none" stroke="${INK}" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+        <path d="M${bx} ${by - 16} V${bottom}" stroke="#6b8f3a" stroke-width="7" stroke-linecap="round"/>
+        ${fruits}
+        <path d="M${bx} ${bottom - 2} C${bx - 11} ${bottom + 8} ${bx - 8} ${bottom + 26} ${bx} ${bottom + 30} C${bx + 8} ${bottom + 26} ${bx + 11} ${bottom + 8} ${bx} ${bottom - 2}Z" fill="#8e3a59" ${s} stroke-width="2.5"/>
+        <path d="M${bx - 3} ${bottom + 6} Q${bx} ${bottom + 18} ${bx} ${bottom + 26}" fill="none" stroke="#c46b8c" stroke-width="2" stroke-linecap="round"/>`;
+    });
+
+    // Trunk made of leaf sheaths: tapered, with curved stripes.
+    const trunk = `
+      <path d="M176 440 C182 360 190 260 194 ${crownY} H216 C220 260 228 360 236 440Z" fill="#b98548" ${s}/>
+      <path d="M200 440 C202 360 204 260 205 ${crownY + 4}" fill="none" stroke="#9a6a37" stroke-width="6" opacity=".6"/>
+      ${[190, 230, 270, 310, 350, 395].map((y, i) => {
+        const half = 9 + i * 3.4;
+        return `<path d="M${205 - half} ${y} Q205 ${y + 10} ${205 + half} ${y - 4}" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round" opacity=".55"/>`;
+      }).join('')}`;
+
+    const ground = `
+      <ellipse cx="200" cy="448" rx="190" ry="26" fill="#7cc26b" ${s}/>
+      ${[[70, 438], [120, 444], [300, 440], [340, 446], [250, 452]].map(([x, y]) =>
+        `<path d="M${x - 8} ${y} q4 -14 8 0 q4 -16 8 0" fill="none" stroke="#3f9b4f" stroke-width="3" stroke-linecap="round"/>`).join('')}`;
+
+    // Little wooden sign with the count.
+    const sign = `
+      <g transform="translate(46 360)">
+        <path d="M34 34 V78" stroke="${INK}" stroke-width="3"/>
+        <rect x="32" y="34" width="6" height="46" fill="#9a6a37" ${s} stroke-width="2"/>
+        <rect x="0" y="0" width="80" height="40" rx="8" fill="#e3b77e" ${s}/>
+        <text x="40" y="28" text-anchor="middle" font-family="'Baloo 2', Nunito, sans-serif" font-weight="800" font-size="24" fill="${INK}">${n}/${goal}</text>
+      </g>`;
+
+    const back = leaves.filter(l => l[1] <= 150 || l[0] === -92);
+    const front = leaves.filter(l => !back.includes(l));
+    return `<svg viewBox="0 0 ${W} ${H + 20}" aria-hidden="true" class="banana-tree ${n >= goal ? 'full' : ''}">
+      ${ground}
+      ${back.map(leaf).join('')}
+      ${trunk}
+      ${front.map(leaf).join('')}
+      <circle cx="${cx}" cy="${crownY + 4}" r="12" fill="#6b8f3a" ${s} stroke-width="2.5"/>
+      ${bunchSvg}
+      ${sparkle}
+      ${sign}
     </svg>`;
   }
 

@@ -37,7 +37,7 @@ The demo starts at 17 of 24 bananas, so three activities walk through every unlo
 - Monki speaks through the browser's built-in speech. Quality depends on the device. Safari on iPhone has a decent Norwegian voice; some desktop browsers have none. Use the sound button to mute.
 - Progress and photos are stored only in the browser (localStorage). Nothing is sent anywhere.
 - Character images are cut out of FORUT's briefing deck and are low resolution. Swap in the design team's files in `assets/characters/` using the same file names.
-- The hallway, items, faces and banana tree are placeholder SVGs in `js/art.js`, drawn to match the character style.
+- The hallway, items, faces and banana tree are SVGs in `js/art.js`, drawn to match the character style. The banana tree is the most finished; the rest are placeholders.
 - The secret Nepal friend is a silhouette on purpose. FORUT creates the real character.
 - The national banana total and the partner idea are example figures for the pitch.
 - The fridge chart is drawn on a canvas. "Skriv ut" prints it on a normal web host; inside a claude.ai artifact printing is blocked, so press and hold the image to save it instead.

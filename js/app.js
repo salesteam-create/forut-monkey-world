@@ -488,7 +488,7 @@
         <div class="card center">
           <p class="kicker">${esc(t('treeMonth'))}</p>
           <h1>${esc(t('treeTitle'))}</h1>
-          <div class="tree-art">${ART.tree(state.bananas, GOAL, justAdded)}</div>
+          <div class="tree-art">${ART.tree(state.bananas, GOAL, justAdded)}<img class="tree-monki" src="assets/characters/monki.png" alt=""></div>
           <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${GOAL}" aria-valuenow="${state.bananas}">
             <span style="width:${(state.bananas / GOAL) * 100}%"></span>
           </div>
