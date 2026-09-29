@@ -58,7 +58,9 @@ svg { display: block; }
   z-index: 5; flex: none;
 }
 .brand { display: flex; align-items: center; gap: 8px; background: none; border: 0; padding: 0; }
-.welcome-logo { height: 22px; width: auto; margin: 0 auto 12px; display: block; }
+.welcome-logo { height: 18px; width: auto; margin: 10px auto 0; display: block; opacity: .85; }
+.welcome-brand { display: block; width: 78%; max-width: 300px; height: auto; margin: 0 auto 14px; }
+.brand-logo { display: block; height: 36px; width: auto; }
 .parents-logo { height: 20px; width: auto; display: block; margin: 18px auto 0; opacity: .8; }
 .brand span { white-space: nowrap; font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 19px; color: var(--blue); }
 .top-actions { display: flex; gap: 6px; }

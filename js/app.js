@@ -151,7 +151,7 @@
   function renderTopbar() {
     $('#topbar').innerHTML = `
       <button class="brand" data-go="hub" aria-label="${esc(t('appName'))}">
-        <span>${esc(t('appName'))}</span>
+        <img class="brand-logo" src="assets/brand/monkis-world-logo.png" alt="${esc(t('appName'))}">
       </button>
       <div class="top-actions">
         <button class="pill banana-pill" data-go="tree" aria-label="${esc(t('tileTree'))}">${ART.bananaIcon}<b>${state.bananas}</b></button>
@@ -167,7 +167,7 @@
       <section class="welcome">
         <div class="scene-bg">${ART.jungle(stage(state.bananas))}</div>
         <div class="welcome-card card">
-          <img class="welcome-logo" src="assets/brand/forut-logo.png" alt="FORUT">
+          <img class="welcome-brand" src="assets/brand/monkis-world-logo.png" alt="${esc(t('appName'))}">
           <p class="kicker">${esc(t('welcomeKicker'))}</p>
           <h1>${esc(t('welcomeTitle'))}</h1>
           <div class="welcome-hero">${monki('wave')}</div>
@@ -179,6 +179,7 @@
           </ul>
           <button class="btn primary big" id="start">${esc(t('start'))}</button>
           <p class="fine">${esc(t('scanned'))}</p>
+          <img class="welcome-logo" src="assets/brand/forut-logo.png" alt="FORUT">
         </div>
       </section>`;
     },
