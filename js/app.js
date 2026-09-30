@@ -75,22 +75,51 @@
     loadVoices();
     speechSynthesis.onvoiceschanged = loadVoices;
   }
-  function speak(text) {
+  // Recorded audio is used when a file exists for the line (see assets/voice/manifest.json);
+  // otherwise the browser's own voice reads it.
+  let manifest = { no: {}, en: {} };
+  try {
+    fetch('assets/voice/manifest.json', { cache: 'no-cache' })
+      .then(r => (r.ok ? r.json() : null))
+      .then(m => { if (m) manifest = Object.assign(manifest, m); })
+      .catch(() => {});
+  } catch (e) {}
+  let clip = null;
+  function stopVoice() {
+    if (clip) { try { clip.pause(); } catch (e) {} clip = null; }
+    try { speechSynthesis.cancel(); } catch (e) {}
+  }
+  function say(key, vars) { speak(t(key, vars), key); }
+  function speak(text, key) {
     const bubble = document.querySelector('.bubble');
     if (bubble) {
       bubble.textContent = text;
       bubble.classList.remove('talk'); void bubble.offsetWidth; bubble.classList.add('talk');
     }
-    if (!state.sound || !('speechSynthesis' in window)) return;
+    if (!state.sound) return;
+    stopVoice();
+    const file = key && (manifest[state.lang] || {})[window.voiceFile(key)];
+    if (file) {
+      clip = new Audio('assets/voice/' + file);
+      clip.play().catch(() => tts(text));
+      return;
+    }
+    tts(text);
+  }
+  // Prefer the higher-quality voices some devices ship ("Natural", "Enhanced", "Premium").
+  const GOOD_VOICE = /natural|neural|enhanced|premium|online|siri/i;
+  function tts(text) {
+    if (!('speechSynthesis' in window)) return;
     try {
-      speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
       const want = state.lang === 'no' ? /^(nb|no|nn)/i : /^en/i;
-      const voice = voices.find(v => want.test(v.lang));
+      const matches = voices.filter(v => want.test(v.lang));
+      const voice = matches.find(v => GOOD_VOICE.test(v.name)) || matches.find(v => v.localService === false) || matches[0];
       u.lang = state.lang === 'no' ? 'nb-NO' : 'en-GB';
       if (voice) u.voice = voice;
-      u.rate = 0.95;
-      u.pitch = 1.25;
+      // A small lift keeps Monki friendly; a big pitch shift is what makes TTS sound robotic.
+      u.rate = 0.92;
+      u.pitch = 1.08;
       speechSynthesis.speak(u);
     } catch (e) {}
   }
@@ -599,38 +628,38 @@
       $('#start').onclick = () => {
         state.onboarded = true; save();
         go('hub');
-        setTimeout(() => speak(t('hubGreeting')), 250);
+        setTimeout(() => say('hubGreeting'), 250);
       };
     },
     hub() {
       $('#monki-talk').onclick = () => {
         const m = $('.hub .monki'); m.classList.remove('jump'); void m.offsetWidth; m.classList.add('jump');
-        speak(t('hubGreeting'));
+        say('hubGreeting');
       };
       $$('[data-friend]').forEach(b => {
-        b.onclick = () => speak(t('friends.' + b.dataset.friend));
+        b.onclick = () => say('friends.' + b.dataset.friend);
       });
       $('#mystery').onclick = () => {
         const left = MYSTERY_AT - state.bananas;
-        if (left > 0) speak(t('mysterySay', { n: left }));
+        if (left > 0) say('mysterySay');
         else go('postcard');
       };
       const st = stage(state.bananas);
       if (st > state.lastStage) {
         state.lastStage = st; save();
-        later(() => speak(t('stageSay')[st]), 400);
+        later(() => say('stageSay.' + st), 400);
       }
     },
-    postcard() { later(() => speak(t('postcardSay')), 200); },
+    postcard() { later(() => say('postcardSay'), 200); },
     hunt() {
-      later(() => speak(t('huntSay')), 200);
+      later(() => say('huntSay'), 200);
       $$('[data-hunt]').forEach(b => {
         b.onclick = () => {
           const k = b.dataset.hunt;
           huntFound[k] = !huntFound[k];
           b.classList.toggle('found', huntFound[k]);
           b.setAttribute('aria-pressed', huntFound[k]);
-          if (huntFound[k]) speak(t('huntFound.' + k));
+          if (huntFound[k]) say('huntFound.' + k);
           $('#hunt-done').disabled = !['red', 'soft', 'round', 'leaf'].every(x => huntFound[x]);
         };
       });
@@ -646,7 +675,7 @@
       };
     },
     breathe() {
-      later(() => speak(t('breatheSay')), 200);
+      later(() => say('breatheSay'), 200);
       const TOTAL = 3, HALF = 4000;
       $('#breath-start').onclick = () => {
         $('#breath-start').classList.add('hidden');
@@ -657,17 +686,17 @@
           $('#breath-count').textContent = t('breatheCount', { n, total: TOTAL });
           $('#breath-word').textContent = t('breatheIn');
           circle.classList.remove('out'); circle.classList.add('in');
-          speak(t('breatheIn'));
+          say('breatheIn');
           later(() => {
             $('#breath-word').textContent = t('breatheOut');
             circle.classList.remove('in'); circle.classList.add('out');
-            speak(t('breatheOut'));
+            say('breatheOut');
             later(() => {
               if (n < TOTAL) return step();
               circle.classList.remove('out');
               $('#breath-word').textContent = '';
               $('#breath-count').textContent = '';
-              speak(t('breatheDone'));
+              say('breatheDone');
               $('#breath-done').classList.remove('hidden');
             }, HALF);
           }, HALF);
@@ -681,27 +710,27 @@
       };
     },
     songs() {
-      later(() => speak(t('songsSay')), 200);
+      later(() => say('songsSay'), 200);
       $$('[data-song]').forEach(b => { b.onclick = () => { currentSong = b.dataset.song; go('song'); }; });
     },
     song() {
-      const sg = t('songs').find(x => x.id === currentSong) || t('songs')[0];
-      $('.player-play').addEventListener('click', () => later(() => speak(sg.after), 600));
+      const idx = Math.max(0, t('songs').findIndex(x => x.id === currentSong));
+      $('.player-play').addEventListener('click', () => later(() => say('songs.' + idx + '.after'), 600));
       $('#song-done').onclick = () => { addBanana(); go('celebrate'); };
     },
     night() {
-      try { speechSynthesis.cancel(); } catch (e) {}
-      later(() => speak(t('nightSay')), 300);
+      stopVoice();
+      later(() => say('nightSay'), 300);
       holdToOpen(() => { state.nightOverride = true; save(); go('hub'); });
     },
     fridge() {
       drawFridge(url => { const img = $('#fridge-img'); if (img) img.src = url; });
       $('#fridge-print').onclick = () => { try { window.print(); } catch (e) {} };
     },
-    mission() { setTimeout(() => speak(t('missionSay')), 200); },
-    game() { setupGame(); setTimeout(() => speak(t('gameSay')), 200); },
+    mission() { setTimeout(() => say('missionSay'), 200); },
+    game() { setupGame(); setTimeout(() => say('gameSay'), 200); },
     real() {
-      setTimeout(() => speak(t('realSay')), 200);
+      setTimeout(() => say('realSay'), 200);
       $('#photo-input').onchange = e => {
         const file = e.target.files && e.target.files[0];
         if (file) readPhoto(file, url => { state.photos.push(url); save(); render(); });
@@ -714,15 +743,15 @@
     },
     celebrate() {
       confetti();
-      setTimeout(() => speak(t('celebrateSay')), 200);
+      setTimeout(() => say('celebrateSay'), 200);
     },
     feelings() {
-      setTimeout(() => speak(t('feelSay')), 200);
+      setTimeout(() => say('feelSay'), 200);
       $$('[data-feel]').forEach(b => {
         b.onclick = () => {
           const k = b.dataset.feel;
           $$('[data-feel]').forEach(x => x.classList.toggle('picked', x === b));
-          speak(t('feelReply.' + k));
+          say('feelReply.' + k);
           $('#starter-q').textContent = t('feelStarter.' + k);
           $('#starter').classList.remove('hidden');
           setTimeout(() => $('#starter').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
@@ -734,7 +763,7 @@
         go('celebrate');
       };
     },
-    tree() { setTimeout(() => speak(t('treeSay')), 200); },
+    tree() { setTimeout(() => say('treeSay'), 200); },
     gate() { holdToOpen(() => go('parents')); },
     parents() {
       $('#set-reminder').onchange = e => { state.reminder = e.target.checked; save(); };
@@ -805,12 +834,12 @@
           target.classList.add('filled');
           placed += 1;
           cheer();
-          if (placed === 4) finish(); else speak(good[(placed - 1) % good.length]);
+          if (placed === 4) finish(); else say('gameGood.' + ((placed - 1) % good.length));
         } else {
           el.classList.add('return');
           el.style.setProperty('--dx', '0px');
           el.style.setProperty('--dy', '0px');
-          speak(t('gameTry'));
+          say('gameTry');
         }
         hint();
       };
@@ -825,7 +854,7 @@
     function finish() {
       clearTimeout(idle);
       confetti();
-      speak(t('gameDone'));
+      say('gameDone');
       $('#game-next').classList.remove('hidden');
     }
   }
@@ -922,14 +951,14 @@
     const s = $('#toggle-sound');
     if (s) s.onclick = () => {
       state.sound = !state.sound; save();
-      if (!state.sound) try { speechSynthesis.cancel(); } catch (e) {}
+      if (!state.sound) stopVoice();
       renderTopbar(); bindGlobal();
     };
     const l = $('#toggle-lang');
     if (l) l.onclick = () => {
       state.lang = state.lang === 'no' ? 'en' : 'no'; save();
       document.documentElement.lang = state.lang === 'no' ? 'nb' : 'en';
-      try { speechSynthesis.cancel(); } catch (e) {}
+      stopVoice();
       render();
     };
   }

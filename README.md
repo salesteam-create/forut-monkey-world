@@ -38,7 +38,7 @@ The demo starts at 17 of 24 bananas, so three activities walk through every unlo
 
 ## Notes
 
-- Monki speaks through the browser's built-in speech. Quality depends on the device. Safari on iPhone has a decent Norwegian voice; some desktop browsers have none. Use the sound button to mute.
+- Voice: see "Voice recordings" below. Until lines are recorded, Monki speaks through the device's built-in voice, which varies by device. Use the sound button to mute.
 - Progress and photos are stored only in the browser (localStorage). Nothing is sent anywhere.
 - Character images are cut out of FORUT's briefing deck and are low resolution. Swap in the design team's files in `assets/characters/` using the same file names.
 - The hallway, items, faces and banana tree are SVGs in `js/art.js`, drawn to match the character style. The banana tree is the most finished; the rest are placeholders.
@@ -47,12 +47,23 @@ The demo starts at 17 of 24 bananas, so three activities walk through every unlo
 - The fridge chart is drawn on a canvas. "Skriv ut" prints it on a normal web host; inside a claude.ai artifact printing is blocked, so press and hold the image to save it instead.
 - All copy is in `js/i18n.js`.
 
+## Voice recordings
+
+Every spoken line can be replaced with a recorded audio file. Lines without a file keep using the device voice, so recordings can be added a few at a time.
+
+1. Open `voice/voice-script.xlsx`. It lists all 43 lines in Norwegian and English with the character, screen, tone and file name. The 21 yellow rows are the ones heard in the pitch walkthrough: record those first. The second tab has recording tips.
+2. Save each line as its own file named as in the sheet (for example `hubGreeting.mp3`; `.m4a` from an iPhone voice memo also works). Norwegian goes in `assets/voice/no/`, English in `assets/voice/en/`.
+3. Run `python3 tools/voice.py manifest` so the app knows which files exist, then commit.
+
+If any copy in `js/i18n.js` changes, run `python3 tools/voice.py script` to regenerate the sheet. The list of spoken lines is in `js/voice-lines.js`.
+
 ## Structure
 
 ```
 index.html          page shell
 css/app.css         all styles
 js/i18n.js          Norwegian and English copy
+js/voice-lines.js   every spoken line, with character and tone notes
 js/art.js           inline SVG illustrations
 js/app.js           screens, game logic, state
 assets/characters/  Monki, Yanay, Orbai, Suala, Palaiya

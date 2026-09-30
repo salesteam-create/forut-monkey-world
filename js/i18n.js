@@ -151,7 +151,7 @@ window.I18N = {
     // Mystery friend
     mysteryName: 'Hemmelig venn',
     mysteryLocked: '{n} bananer til',
-    mysterySay: 'Noen vil hilse på deg! Samle {n} bananer til, så får du et postkort.',
+    mysterySay: 'Psst! Noen vil hilse på deg. Samle flere bananer, så får du et postkort!',
     mysteryUnlocked: 'Et postkort fra Nepal',
     postcardTitle: 'Et postkort fra Nepal',
     postcardSay: 'Namaste! Jeg bor høyt oppe i fjellene i Nepal. Høsten 2027 blir vi kjent. Kan du gjette hvem jeg er?',
@@ -374,7 +374,7 @@ window.I18N = {
 
     mysteryName: 'Secret friend',
     mysteryLocked: '{n} bananas to go',
-    mysterySay: 'Someone wants to say hello! Collect {n} more bananas and you will get a postcard.',
+    mysterySay: 'Psst! Someone wants to say hello. Collect more bananas and you will get a postcard!',
     mysteryUnlocked: 'A postcard from Nepal',
     postcardTitle: 'A postcard from Nepal',
     postcardSay: 'Namaste! I live high up in the mountains of Nepal. In autumn 2027 we will get to know each other. Can you guess who I am?',
