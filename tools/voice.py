@@ -34,12 +34,18 @@ def load_lines():
     return json.loads(out.stdout)
 
 
-def manifest():
+def manifest(credit=None):
+    path = VOICE / 'manifest.json'
+    old = json.loads(path.read_text()) if path.exists() else {}
     data = {}
+    # `credit` marks generated voices that need an ElevenLabs attribution in the app.
+    keep = old.get('credit', False) if credit is None else credit
+    if keep:
+        data['credit'] = True
     for lang in LANGS:
         files = sorted(p for p in (VOICE / lang).glob('*') if p.suffix.lower() in AUDIO)
         data[lang] = {p.stem: f'{lang}/{p.name}' for p in files}
-    (VOICE / 'manifest.json').write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
+    path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
     known = {l['file'] for l in load_lines()}
     for lang in LANGS:
         extra = sorted(set(data[lang]) - known)

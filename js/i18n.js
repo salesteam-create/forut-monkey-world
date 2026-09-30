@@ -126,6 +126,7 @@ window.I18N = {
       'Ingen sammenligning med andre barn.',
       'Vi samler så lite data som mulig.'
     ],
+    voiceCredit: 'Stemmer laget med ElevenLabs',
     resetDemo: 'Nullstill demo',
     // Hub sections and new tiles
     secPlay: 'Lek',
@@ -352,6 +353,7 @@ window.I18N = {
       'No comparison with other children.',
       'We collect as little data as possible.'
     ],
+    voiceCredit: 'Voices made with ElevenLabs',
     resetDemo: 'Reset demo',
     secPlay: 'Play',
     secFeel: 'Feelings',

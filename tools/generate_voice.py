@@ -79,7 +79,7 @@ def main():
             chars += len(text)
             print(f'{lang}/{out.name}')
     print(f'Generated {made} files ({chars} characters), skipped {skipped} existing.')
-    voice.manifest()
+    voice.manifest(credit=True if made else None)
 
 
 if __name__ == '__main__':

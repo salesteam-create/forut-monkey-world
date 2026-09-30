@@ -81,10 +81,14 @@
   try {
     fetch('assets/voice/manifest.json', { cache: 'no-cache' })
       .then(r => (r.ok ? r.json() : null))
-      .then(m => { if (m) manifest = Object.assign(manifest, m); })
+      .then(m => { if (m) { manifest = Object.assign(manifest, m); showCredit(); } })
       .catch(() => {});
   } catch (e) {}
   let clip = null;
+  // The ElevenLabs free plan requires attribution wherever its voices are used.
+  function showCredit() {
+    document.querySelectorAll('.voice-credit').forEach(el => { el.hidden = !manifest.credit; });
+  }
   function stopVoice() {
     if (clip) { try { clip.pause(); } catch (e) {} clip = null; }
     try { speechSynthesis.cancel(); } catch (e) {}
@@ -209,6 +213,7 @@
           <button class="btn primary big" id="start">${esc(t('start'))}</button>
           <p class="fine">${esc(t('scanned'))}</p>
           <img class="welcome-logo" src="assets/brand/forut-logo.png" alt="FORUT">
+          <p class="fine voice-credit" hidden>${esc(t('voiceCredit'))}</p>
         </div>
       </section>`;
     },
@@ -617,6 +622,7 @@
           <ul class="why">${t('why').map(w => `<li>${ART.icons.check}<span>${esc(w)}</span></li>`).join('')}</ul>
         </div>
         <img class="parents-logo" src="assets/brand/forut-logo.png" alt="FORUT">
+        <p class="fine voice-credit center-text" hidden>${esc(t('voiceCredit'))}</p>
         <button class="btn link" id="reset">${esc(t('resetDemo'))}</button>
       </section>`;
     }
@@ -972,6 +978,7 @@
     el.innerHTML = screens[screen]();
     bindGlobal();
     if (behaviours[screen]) behaviours[screen]();
+    showCredit();
   }
 
   // Count visible time as screen time for the parent overview.
