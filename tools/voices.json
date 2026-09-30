@@ -1,0 +1,7 @@
+{
+  "_note": "ElevenLabs voice IDs per character. Replace with voices picked from the ElevenLabs voice library. 'default' is used for any character not listed.",
+  "default": "REPLACE_WITH_VOICE_ID",
+  "Monki": "REPLACE_WITH_VOICE_ID",
+  "Palaiya": "REPLACE_WITH_VOICE_ID",
+  "Secret friend (Nepal)": "REPLACE_WITH_VOICE_ID"
+}

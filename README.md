@@ -55,6 +55,8 @@ Every spoken line can be replaced with a recorded audio file. Lines without a fi
 2. Save each line as its own file named as in the sheet (for example `hubGreeting.mp3`; `.m4a` from an iPhone voice memo also works). Norwegian goes in `assets/voice/no/`, English in `assets/voice/en/`.
 3. Run `python3 tools/voice.py manifest` so the app knows which files exist, then commit.
 
+**Generated voices instead of recordings:** with an ElevenLabs API key in the environment (`ELEVENLABS_API_KEY`) and `api.elevenlabs.io` allowed on the network, set the voice IDs in `tools/voices.json` and run `python3 tools/generate_voice.py` (add `--demo` for just the demo lines). It writes the files and rebuilds the manifest.
+
 If any copy in `js/i18n.js` changes, run `python3 tools/voice.py script` to regenerate the sheet. The list of spoken lines is in `js/voice-lines.js`.
 
 ## Structure
