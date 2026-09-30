@@ -24,7 +24,10 @@ import voice  # noqa: E402  (load_lines, manifest)
 
 ROOT = voice.ROOT
 API = 'https://api.elevenlabs.io/v1/text-to-speech/{voice_id}?output_format=mp3_44100_128'
-MODEL = 'eleven_multilingual_v2'  # speaks Norwegian and English
+# multilingual_v2 has no Norwegian and reads Bokmål with a Danish accent, so Norwegian
+# uses Flash v2.5 with the language set explicitly.
+MODELS = {'no': 'eleven_flash_v2_5', 'en': 'eleven_multilingual_v2'}
+LANGUAGE_CODES = {'no': 'no'}
 
 # Slower, steadier delivery for Palaiya; livelier for Monki.
 SETTINGS = {
@@ -34,8 +37,11 @@ SETTINGS = {
 }
 
 
-def synth(key, voice_id, text, settings):
-    body = json.dumps({'text': text, 'model_id': MODEL, 'voice_settings': settings}).encode()
+def synth(key, voice_id, text, settings, lang):
+    payload = {'text': text, 'model_id': MODELS[lang], 'voice_settings': settings}
+    if lang in LANGUAGE_CODES:
+        payload['language_code'] = LANGUAGE_CODES[lang]
+    body = json.dumps(payload).encode()
     req = urllib.request.Request(API.format(voice_id=voice_id), data=body, method='POST', headers={
         'xi-api-key': key, 'Content-Type': 'application/json', 'Accept': 'audio/mpeg'})
     for attempt in range(4):
@@ -74,7 +80,7 @@ def main():
                 continue
             voice_id = voices.get(l['char']) or voices['default']
             text = l[lang]
-            out.write_bytes(synth(key, voice_id, text, SETTINGS.get(l['char'], SETTINGS['default'])))
+            out.write_bytes(synth(key, voice_id, text, SETTINGS.get(l['char'], SETTINGS['default']), lang))
             made += 1
             chars += len(text)
             print(f'{lang}/{out.name}')
