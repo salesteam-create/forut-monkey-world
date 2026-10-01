@@ -45,6 +45,20 @@ window.VOICE_LINES = [
   { key: 'songs.1.after', char: 'Monki', screen: 'Songs and films', tone: 'Singing along energy', demo: false },
   { key: 'songs.2.after', char: 'Monki', screen: 'Songs and films', tone: 'Playful, stompy', demo: false },
   { key: 'songs.3.after', char: 'Monki', screen: 'Songs and films', tone: 'Quiet, bedtime', demo: false },
+  { key: 'walkSay', char: 'Monki', screen: 'Go for a walk', tone: 'Outdoorsy, excited to go', demo: true },
+  { key: 'walkItems.bird', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: true },
+  { key: 'walkItems.dog', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: true },
+  { key: 'walkItems.tree', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: true },
+  { key: 'walkItems.flower', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: false },
+  { key: 'walkItems.bus', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: false },
+  { key: 'walkItems.cat', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: false },
+  { key: 'walkItems.puddle', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: false },
+  { key: 'walkItems.stone', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: false },
+  { key: 'walkItems.bike', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: false },
+  { key: 'walkItems.squirrel', char: 'Monki', screen: 'Go for a walk', tone: 'Naming it happily, one word', demo: false },
+  { key: 'walkSongSay', char: 'Monki', screen: 'Walking song', tone: 'Proud, can not wait to share', demo: true },
+  { key: 'foodSay', char: 'Monki', screen: 'Help Mommy', tone: 'Hungry and helpful', demo: true },
+  { key: 'dishSay', char: 'Monki', screen: 'Help Mommy', tone: 'Encouraging', demo: true },
   { key: 'nightSay', char: 'Monki', screen: 'Goodnight', tone: 'Sleepy, yawning, warm', demo: false }
 ];
 window.voiceFile = key => key.replace(/\./g, '-');

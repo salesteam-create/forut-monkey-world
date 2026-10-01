@@ -116,6 +116,60 @@
       <path d="M20 80 Q48 52 74 26 M40 60 L38 44 M52 48 L64 50" fill="none"/></g></svg>`
   };
 
+  // Things you spot on a walk. Simple, friendly, readable at 60px.
+  const walk = {
+    bird: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <ellipse cx="48" cy="56" rx="28" ry="22" fill="#4fb3e8"/><circle cx="68" cy="38" r="15" fill="#4fb3e8"/>
+      <path d="M80 38 L92 42 L80 46Z" fill="#ffb347"/><circle cx="71" cy="35" r="3" fill="${INK}"/>
+      <path d="M30 52 Q44 40 56 56 Q42 64 30 52Z" fill="#2f8fc4"/><path d="M42 78 V88 M54 78 V88" fill="none"/></g></svg>`,
+    dog: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <rect x="20" y="48" width="52" height="26" rx="12" fill="#c99a6b"/><path d="M26 74 V88 M40 74 V88 M56 74 V88 M66 74 V88" fill="none"/>
+      <circle cx="74" cy="42" r="16" fill="#d9ad7c"/><path d="M62 30 Q56 46 64 50Z M84 28 Q92 42 86 48Z" fill="#8a5a2c"/>
+      <circle cx="70" cy="40" r="2.5" fill="${INK}"/><circle cx="80" cy="40" r="2.5" fill="${INK}"/><ellipse cx="76" cy="48" rx="4" ry="3" fill="${INK}"/>
+      <path d="M20 54 Q8 44 12 34" fill="none"/></g></svg>`,
+    tree: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <rect x="43" y="56" width="14" height="34" rx="3" fill="#9b6b3c"/>
+      <circle cx="50" cy="38" r="26" fill="#56b36a"/><circle cx="32" cy="50" r="14" fill="#4fae5c"/><circle cx="68" cy="50" r="14" fill="#4fae5c"/></g></svg>`,
+    flower: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <path d="M50 52 V92 M50 76 Q36 66 30 74 Q40 82 50 76" fill="#56b36a"/>
+      ${[0, 72, 144, 216, 288].map(a => `<ellipse cx="50" cy="22" rx="10" ry="15" transform="rotate(${a} 50 38)" fill="#ff8ac2"/>`).join('')}
+      <circle cx="50" cy="38" r="9" fill="#ffd23f"/></g></svg>`,
+    bus: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <rect x="10" y="24" width="80" height="50" rx="10" fill="#e8513f"/>
+      <rect x="18" y="32" width="18" height="16" rx="3" fill="#cfefff"/><rect x="41" y="32" width="18" height="16" rx="3" fill="#cfefff"/><rect x="64" y="32" width="18" height="16" rx="3" fill="#cfefff"/>
+      <circle cx="28" cy="76" r="8" fill="#3a4450"/><circle cx="72" cy="76" r="8" fill="#3a4450"/></g></svg>`,
+    cat: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <path d="M26 30 L32 12 L44 26Z M74 30 L68 12 L56 26Z" fill="#ff9d5c"/>
+      <circle cx="50" cy="44" r="24" fill="#ff9d5c"/><ellipse cx="50" cy="80" rx="24" ry="14" fill="#ff9d5c"/>
+      <circle cx="41" cy="42" r="3" fill="${INK}"/><circle cx="59" cy="42" r="3" fill="${INK}"/><path d="M46 52 L50 55 L54 52" fill="none"/>
+      <path d="M28 50 H16 M72 50 H84" fill="none" stroke-width="2"/></g></svg>`,
+    puddle: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <path d="M12 66 Q14 50 36 52 Q46 42 64 50 Q90 48 88 66 Q86 82 56 80 Q20 86 12 66Z" fill="#8cc4ff"/>
+      <ellipse cx="42" cy="64" rx="12" ry="4" fill="#cfe7ff" stroke="none"/>
+      <path d="M50 18 Q42 30 50 36 Q58 30 50 18Z" fill="#8cc4ff"/></g></svg>`,
+    stone: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <path d="M14 76 Q12 50 34 40 Q56 30 76 44 Q92 58 86 76Z" fill="#b8c0c8"/>
+      <path d="M36 52 Q44 48 52 52" fill="none" stroke-width="2"/></g></svg>`,
+    bike: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <circle cx="26" cy="66" r="16" fill="none"/><circle cx="76" cy="66" r="16" fill="none"/>
+      <path d="M26 66 L42 40 L66 40 L76 66 M42 40 L52 66 L66 40 M38 32 H48 M64 30 L68 40" fill="none" stroke="#3a7bd5" stroke-width="4"/>
+      <circle cx="52" cy="66" r="3" fill="${INK}"/></g></svg>`,
+    squirrel: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <path d="M40 80 Q8 76 14 40 Q20 14 44 22 Q30 36 38 54Z" fill="#c4622d"/>
+      <ellipse cx="58" cy="64" rx="18" ry="20" fill="#d9783f"/><circle cx="64" cy="38" r="13" fill="#d9783f"/>
+      <path d="M58 26 L60 16 L66 26Z" fill="#d9783f"/><circle cx="68" cy="36" r="2.5" fill="${INK}"/>
+      <ellipse cx="62" cy="66" rx="8" ry="11" fill="#f3d8b6"/></g></svg>`
+  };
+
+  // A plate with a dish on it, coloured per dish.
+  function dish(color, accent) {
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}>
+      <ellipse cx="50" cy="60" rx="42" ry="26" fill="#fff"/>
+      <ellipse cx="50" cy="58" rx="30" ry="17" fill="${color}"/>
+      <circle cx="40" cy="54" r="5" fill="${accent}" stroke-width="2"/><circle cx="58" cy="60" r="5" fill="${accent}" stroke-width="2"/><circle cx="54" cy="50" r="4" fill="${accent}" stroke-width="2"/>
+      <path d="M88 24 V48 M84 24 V34 Q88 38 92 34 V24" fill="none" stroke-width="2.5"/></g></svg>`;
+  }
+
   const media = {
     note: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}><path d="M38 70 V22 L78 14 V62" fill="none" stroke-width="5"/><ellipse cx="30" cy="72" rx="12" ry="9" fill="${INK}"/><ellipse cx="70" cy="64" rx="12" ry="9" fill="${INK}"/></g></svg>`,
     film: `<svg viewBox="0 0 100 100" aria-hidden="true"><g ${s}><rect x="14" y="24" width="72" height="52" rx="10" fill="#fff"/><path d="M42 38 L62 50 L42 62Z" fill="#e8513f"/></g></svg>`
@@ -321,5 +375,5 @@
     star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z" fill="currentColor"/></svg>'
   };
 
-  window.ART = { jungle, nepal, silhouette, hunt, media, hallway, items, face, tree, bananaIcon, icons };
+  window.ART = { walk, dish, jungle, nepal, silhouette, hunt, media, hallway, items, face, tree, bananaIcon, icons };
 })();

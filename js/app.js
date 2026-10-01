@@ -2,7 +2,7 @@
 // Single-page vanilla JS. Screens are rendered into #screen; state lives in memory and,
 // when the browser allows it, in localStorage so a demo survives a reload.
 (function () {
-  const STORE_KEY = 'monkis-verden-demo-v2';
+  const STORE_KEY = 'monkis-world-demo-v3';
   const GOAL = 24;
   const MYSTERY_AT = 20;
   const NATION_BASE = 412380; // example national total for the pitch
@@ -25,8 +25,7 @@
     screenLimit: 10,
     nightOverride: false,
     lastStage: 2,
-    reminder: true,
-    photos: []
+    reminder: true
   };
 
   let state = load();
@@ -36,6 +35,9 @@
   let timers = [];
   let huntFound = {};
   let currentSong = null;
+  let walkSeen = {};
+  let currentDish = null;
+  let dishDone = {};
 
   // ---------- storage ----------
   function load() {
@@ -48,10 +50,7 @@
   function save() {
     try {
       localStorage.setItem(STORE_KEY, JSON.stringify(state));
-    } catch (e) {
-      // Photos can exceed the quota; keep them in memory only and retry.
-      try { localStorage.setItem(STORE_KEY, JSON.stringify(Object.assign({}, state, { photos: [] }))); } catch (e2) {}
-    }
+    } catch (e) { /* storage blocked: progress lives in memory only */ }
   }
 
   // ---------- i18n ----------
@@ -135,6 +134,7 @@
     screen = next;
     timers.forEach(clearTimeout);
     timers = [];
+    if (typeof stopJingle === 'function') stopJingle();
     const fx = $('#fx');
     if (fx) fx.innerHTML = '';
     render();
@@ -240,7 +240,7 @@
         <p class="sec-label">${esc(t('secPlay'))}</p>
         <div class="tiles">
           ${tile('tile-hunt', 'hunt', ART.hunt.leaf, t('tileHunt'), t('tileHuntSub'))}
-          ${tile('tile-songs', 'songs', ART.media.note, t('tileSongs'), t('tileSongsSub'))}
+          ${tile('tile-walk', 'walk', ART.walk.bird, t('tileWalk'), t('tileWalkSub'))}
         </div>
         <p class="sec-label">${esc(t('secFeel'))}</p>
         <div class="tiles">
@@ -249,6 +249,10 @@
         </div>
         <p class="sec-label">${esc(t('secTogether'))}</p>
         <div class="tiles">
+          ${tile('tile-food', 'food', ART.dish('#ffb347', '#56b36a'), t('tileFood'), t('tileFoodSub'))}
+          ${tile('tile-songs', 'songs', ART.media.note, t('tileSongs'), t('tileSongsSub'))}
+        </div>
+        <div class="tiles tiles-gap">
           ${tile('tile-tree', 'tree', ART.bananaIcon, t('tileTree'), t('tileTreeSub', { n: state.bananas, goal: GOAL }))}
           ${tile('tile-parents', 'gate', `<span class="lock">${ART.icons.lock}</span>`, t('tileParents'), t('tileParentsSub'))}
         </div>
@@ -296,11 +300,6 @@
               ${ART.hunt[k]}<span>${esc(t('huntItems.' + k))}</span><i class="tick">${ART.icons.check}</i></button>`).join('')}
           </div>
           <p class="parent-note">${esc(t('huntParent'))}</p>
-          <label class="btn outline">
-            ${ART.icons.camera}<span>${esc(t('huntPhoto'))}</span>
-            <input type="file" accept="image/*" capture="environment" id="hunt-photo" hidden>
-          </label>
-          <p class="fine">${esc(t('huntPlayDay'))}</p>
           <button class="btn primary big" id="hunt-done" ${all ? '' : 'disabled'}>${ART.icons.check}<span>${esc(t('huntDone'))}</span></button>
         </div>
       </section>`;
@@ -385,6 +384,77 @@
       </section>`;
     },
 
+    walk() {
+      const keys = Object.keys(ART.walk);
+      const n = keys.filter(k => walkSeen[k]).length;
+      return `
+      <section class="walk">
+        ${backBtn('hub')}
+        <div class="card center">
+          <h1>${esc(t('walkTitle'))}</h1>
+          <div class="bubble">${esc(t('walkSay'))}</div>
+          <div class="walk-grid">
+            ${keys.map(k => `<button class="walk-card ${walkSeen[k] ? 'found' : ''}" data-walk="${k}" aria-pressed="${!!walkSeen[k]}">
+              ${ART.walk[k]}<span>${esc(t('walkItems.' + k))}</span><i class="tick">${ART.icons.check}</i></button>`).join('')}
+          </div>
+          <p class="count" id="walk-count">${esc(t('walkCount', { n }))}</p>
+          <p class="parent-note">${esc(t('walkParent'))}</p>
+          <button class="btn primary big" id="walk-done" ${n >= 3 ? '' : 'disabled'}>${ART.media.note}<span>${esc(n >= 3 ? t('walkDone') : t('walkMin'))}</span></button>
+        </div>
+      </section>`;
+    },
+
+    jingle() {
+      const lines = jingleLines();
+      return `
+      <section class="jingle">
+        <div class="scene-bg">${ART.jungle(stage(state.bananas))}</div>
+        <div class="card center">
+          <p class="kicker">${ART.media.note}${esc(t('jingleTitle'))}</p>
+          <div class="jingle-stage">${monki('dance')}<span class="notes"><i>&#9834;</i><i>&#9835;</i><i>&#9834;</i></span></div>
+          <ol class="lyrics" id="lyrics">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ol>
+          <button class="btn outline" id="jingle-play">${ART.icons.play}<span>${esc(t('jinglePlay'))}</span></button>
+          <p class="fine">${esc(t('jingleConcept'))}</p>
+          <button class="btn primary big" id="jingle-done">${ART.icons.check}<span>${esc(t('jingleDone'))}</span></button>
+        </div>
+      </section>`;
+    },
+
+    food() {
+      return `
+      <section class="food">
+        ${backBtn('hub')}
+        <div class="card center">
+          <h1>${esc(t('foodTitle'))}</h1>
+          <div class="bubble">${esc(t('foodSay'))}</div>
+          <p class="fine"><span class="tag">${esc(t('foodNote'))}</span></p>
+        </div>
+        <div class="dish-grid">
+          ${t('dishes').map(d => `<button class="dish-card" data-dish="${d.id}">${ART.dish(d.color, d.accent)}<b>${esc(d.name)}</b></button>`).join('')}
+        </div>
+      </section>`;
+    },
+
+    dish() {
+      const d = t('dishes').find(x => x.id === currentDish) || t('dishes')[0];
+      const all = d.tasks.every((_, i) => dishDone[i]);
+      return `
+      <section class="dish">
+        ${backBtn('food')}
+        <div class="card center">
+          <div class="dish-hero">${ART.dish(d.color, d.accent)}</div>
+          <h1>${esc(d.name)}</h1>
+          <div class="bubble">${esc(t('dishSay'))}</div>
+          <ul class="tasks">
+            ${d.tasks.map((task, i) => `<li><button class="task ${dishDone[i] ? 'done' : ''}" data-task="${i}" aria-pressed="${!!dishDone[i]}">
+              <i class="box">${ART.icons.check}</i><span>${esc(task)}</span></button></li>`).join('')}
+          </ul>
+          <p class="parent-note">${esc(t('dishSafety'))}</p>
+          <button class="btn primary big" id="dish-done" ${all ? '' : 'disabled'}>${ART.icons.check}<span>${esc(t('dishDone'))}</span></button>
+        </div>
+      </section>`;
+    },
+
     fridge() {
       return `
       <section class="fridge">
@@ -444,7 +514,6 @@
     },
 
     real() {
-      const photo = state.photos[state.photos.length - 1];
       return `
       <section class="real">
         ${backBtn('hub')}
@@ -453,12 +522,6 @@
           <div class="bubble">${esc(t('realSay'))}</div>
           ${monki('bob small')}
           <p class="parent-note">${esc(t('realParent'))}</p>
-          <label class="btn outline">
-            ${ART.icons.camera}<span>${esc(t('realPhoto'))}</span>
-            <input type="file" accept="image/*" capture="environment" id="photo-input" hidden>
-          </label>
-          ${photo ? `<img class="photo-preview" src="${photo}" alt="">` : ''}
-          <p class="fine">${esc(t('realPhotoNote'))}</p>
           <button class="btn primary big" id="real-done">${ART.icons.check}<span>${esc(t('realDone'))}</span></button>
         </div>
       </section>`;
@@ -605,10 +668,8 @@
           <button class="btn outline" id="night-demo">${ART.icons.moon}<span>${esc(t('nightDemo'))}</span></button>
         </div>
         <div class="card">
-          <h2>${esc(t('photosTitle'))}</h2>
-          ${state.photos.length
-            ? `<div class="photos">${state.photos.map(p => `<img src="${p}" alt="">`).join('')}</div>`
-            : `<p class="fine">${esc(t('photosEmpty'))}</p>`}
+          <h2>${esc(t('posterTitle'))}</h2>
+          <p class="fine">${esc(t('posterBody'))}</p>
           <button class="btn outline" disabled>${ART.icons.gift}<span>${esc(t('orderPrint'))}</span></button>
           <button class="btn outline" data-go="fridge">${ART.icons.print}<span>${esc(t('fridgeOpen'))}</span></button>
         </div>
@@ -669,10 +730,6 @@
           $('#hunt-done').disabled = !['red', 'soft', 'round', 'leaf'].every(x => huntFound[x]);
         };
       });
-      $('#hunt-photo').onchange = e => {
-        const file = e.target.files && e.target.files[0];
-        if (file) readPhoto(file, url => { state.photos.push(url); save(); });
-      };
       $('#hunt-done').onclick = () => {
         huntFound = {};
         state.missionsWeek += 1;
@@ -729,6 +786,59 @@
       later(() => say('nightSay'), 300);
       holdToOpen(() => { state.nightOverride = true; save(); go('hub'); });
     },
+    walk() {
+      later(() => say('walkSay'), 200);
+      $$('[data-walk]').forEach(b => {
+        b.onclick = () => {
+          const k = b.dataset.walk;
+          walkSeen[k] = !walkSeen[k];
+          b.classList.toggle('found', walkSeen[k]);
+          b.setAttribute('aria-pressed', walkSeen[k]);
+          if (walkSeen[k]) say('walkItems.' + k);
+          const n = Object.values(walkSeen).filter(Boolean).length;
+          $('#walk-count').textContent = t('walkCount', { n });
+          const done = $('#walk-done');
+          done.disabled = n < 3;
+          done.querySelector('span').textContent = n >= 3 ? t('walkDone') : t('walkMin');
+        };
+      });
+      $('#walk-done').onclick = () => go('jingle');
+    },
+    jingle() {
+      later(() => say('walkSongSay'), 200);
+      $('#jingle-play').onclick = () => playJingle();
+      $('#jingle-done').onclick = () => {
+        stopJingle();
+        walkSeen = {};
+        state.missionsWeek += 1;
+        addBanana();
+        go('celebrate');
+      };
+    },
+    food() {
+      later(() => say('foodSay'), 200);
+      $$('[data-dish]').forEach(b => { b.onclick = () => { currentDish = b.dataset.dish; dishDone = {}; go('dish'); }; });
+    },
+    dish() {
+      later(() => say('dishSay'), 200);
+      const d = t('dishes').find(x => x.id === currentDish) || t('dishes')[0];
+      $$('[data-task]').forEach(b => {
+        b.onclick = () => {
+          const i = b.dataset.task;
+          dishDone[i] = !dishDone[i];
+          b.classList.toggle('done', dishDone[i]);
+          b.setAttribute('aria-pressed', dishDone[i]);
+          if (dishDone[i]) say('gameGood.' + (Number(i) % 4));
+          $('#dish-done').disabled = !d.tasks.every((_, j) => dishDone[j]);
+        };
+      });
+      $('#dish-done').onclick = () => {
+        dishDone = {};
+        state.missionsWeek += 1;
+        addBanana();
+        go('celebrate');
+      };
+    },
     fridge() {
       drawFridge(url => { const img = $('#fridge-img'); if (img) img.src = url; });
       $('#fridge-print').onclick = () => { try { window.print(); } catch (e) {} };
@@ -737,10 +847,6 @@
     game() { setupGame(); setTimeout(() => say('gameSay'), 200); },
     real() {
       setTimeout(() => say('realSay'), 200);
-      $('#photo-input').onchange = e => {
-        const file = e.target.files && e.target.files[0];
-        if (file) readPhoto(file, url => { state.photos.push(url); save(); render(); });
-      };
       $('#real-done').onclick = () => {
         state.missionsWeek += 1;
         addBanana();
@@ -865,6 +971,71 @@
     }
   }
 
+  // ---------- walking song (concept for an AI-made jingle) ----------
+  function jingleLines() {
+    const seen = Object.keys(ART.walk).filter(k => walkSeen[k]).map(k => t('walkNouns.' + k));
+    const lines = [t('jingleStart'), t('jingleIntro')];
+    for (let i = 0; i < seen.length; i += 2) {
+      if (i + 1 < seen.length) lines.push(t('jinglePair', { a: seen[i], b: seen[i + 1] }));
+      else lines.push(t('jingleOne', { a: seen[i] }));
+    }
+    lines.push(t('jingleEnd'));
+    return lines.map((l, i) => i === 0 ? l : l.charAt(0).toUpperCase() + l.slice(1));
+  }
+
+  let audioCtx = null;
+  let jingleTimers = [];
+  function stopJingle() {
+    jingleTimers.forEach(clearTimeout);
+    jingleTimers = [];
+    $$('#lyrics li').forEach(li => li.classList.remove('on'));
+    const st = $('.jingle-stage');
+    if (st) st.classList.remove('playing');
+  }
+  // A cheerful tune on a plucked synth: one bar of melody per lyric line, with a bass note.
+  function playJingle() {
+    stopVoice();
+    stopJingle();
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) { audioCtx = null; }
+    const lines = $$('#lyrics li');
+    const beat = 0.3; // seconds per eighth note (about 100 bpm)
+    const C = 261.63, scale = [0, 2, 4, 7, 9, 12, 14, 16];
+    const hz = step => C * Math.pow(2, scale[step] / 12);
+    const bars = [[0, 2, 4, 4, 5, 4, 2, 0], [2, 4, 5, 5, 6, 5, 4, 2], [4, 5, 6, 4, 5, 3, 2, 1], [0, 2, 4, 2, 3, 1, 0, 0]];
+    const bass = [0, 3, 4, 0];
+    const t0 = audioCtx ? audioCtx.currentTime + 0.1 : 0;
+    const note = (f, at, len, type, vol) => {
+      if (!audioCtx) return;
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, at);
+      g.gain.exponentialRampToValueAtTime(vol, at + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, at + len);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(at); o.stop(at + len + 0.05);
+    };
+    lines.forEach((li, i) => {
+      const bar = i === lines.length - 1 ? bars[3] : bars[i % 3];
+      const start = i * 8 * beat;
+      bar.forEach((step, k) => note(hz(step), t0 + start + k * beat, beat * 0.9, 'triangle', 0.18));
+      note(hz(bass[i % 4]) / 2, t0 + start, beat * 3.5, 'sine', 0.14);
+      note(hz(bass[i % 4]) / 2, t0 + start + 4 * beat, beat * 3.5, 'sine', 0.12);
+      jingleTimers.push(setTimeout(() => {
+        lines.forEach(x => x.classList.toggle('on', x === li));
+      }, (start + 0.1) * 1000));
+    });
+    const st = $('.jingle-stage');
+    if (st) st.classList.add('playing');
+    jingleTimers.push(setTimeout(() => {
+      stopJingle();
+      const b = $('#jingle-play span');
+      if (b) b.textContent = t('jingleReplay');
+    }, (lines.length * 8 * beat + 0.4) * 1000));
+  }
+
   // Grown-up gate: press and hold for 3 seconds.
   function holdToOpen(onOpen) {
     const btn = $('#hold');
@@ -931,24 +1102,6 @@
     img.src = 'assets/characters/monki.png';
     // Draw again once web fonts are ready so the sheet uses the brand faces.
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (screen === 'fridge') draw(); });
-  }
-
-  function readPhoto(file, cb) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new Image();
-      img.onload = () => {
-        const max = 640;
-        const scale = Math.min(1, max / Math.max(img.width, img.height));
-        const c = document.createElement('canvas');
-        c.width = Math.round(img.width * scale);
-        c.height = Math.round(img.height * scale);
-        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-        cb(c.toDataURL('image/jpeg', 0.75));
-      };
-      img.src = reader.result;
-    };
-    reader.readAsDataURL(file);
   }
 
   // ---------- global wiring ----------
