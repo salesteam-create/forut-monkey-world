@@ -6,12 +6,14 @@
     "breatheOut": "no/breatheOut.mp3",
     "breatheSay": "no/breatheSay.mp3",
     "celebrateSay": "no/celebrateSay.mp3",
+    "dishSay": "no/dishSay.mp3",
     "feelReply-angry": "no/feelReply-angry.mp3",
     "feelReply-excited": "no/feelReply-excited.mp3",
     "feelReply-happy": "no/feelReply-happy.mp3",
     "feelReply-sad": "no/feelReply-sad.mp3",
     "feelReply-scared": "no/feelReply-scared.mp3",
     "feelSay": "no/feelSay.mp3",
+    "foodSay": "no/foodSay.mp3",
     "friends-orbai": "no/friends-orbai.mp3",
     "friends-palaiya": "no/friends-palaiya.mp3",
     "friends-suala": "no/friends-suala.mp3",
@@ -43,7 +45,19 @@
     "stageSay-2": "no/stageSay-2.mp3",
     "stageSay-3": "no/stageSay-3.mp3",
     "stageSay-4": "no/stageSay-4.mp3",
-    "treeSay": "no/treeSay.mp3"
+    "treeSay": "no/treeSay.mp3",
+    "walkItems-bike": "no/walkItems-bike.mp3",
+    "walkItems-bird": "no/walkItems-bird.mp3",
+    "walkItems-bus": "no/walkItems-bus.mp3",
+    "walkItems-cat": "no/walkItems-cat.mp3",
+    "walkItems-dog": "no/walkItems-dog.mp3",
+    "walkItems-flower": "no/walkItems-flower.mp3",
+    "walkItems-puddle": "no/walkItems-puddle.mp3",
+    "walkItems-squirrel": "no/walkItems-squirrel.mp3",
+    "walkItems-stone": "no/walkItems-stone.mp3",
+    "walkItems-tree": "no/walkItems-tree.mp3",
+    "walkSay": "no/walkSay.mp3",
+    "walkSongSay": "no/walkSongSay.mp3"
   },
   "en": {
     "breatheDone": "en/breatheDone.mp3",
@@ -51,6 +65,8 @@
     "breatheOut": "en/breatheOut.mp3",
     "breatheSay": "en/breatheSay.mp3",
     "celebrateSay": "en/celebrateSay.mp3",
+    "dishSay": "en/dishSay.mp3",
+    "foodSay": "en/foodSay.mp3",
     "gameDone": "en/gameDone.mp3",
     "gameGood-0": "en/gameGood-0.mp3",
     "gameGood-1": "en/gameGood-1.mp3",
@@ -66,6 +82,11 @@
     "postcardSay": "en/postcardSay.mp3",
     "realSay": "en/realSay.mp3",
     "stageSay-3": "en/stageSay-3.mp3",
-    "treeSay": "en/treeSay.mp3"
+    "treeSay": "en/treeSay.mp3",
+    "walkItems-bird": "en/walkItems-bird.mp3",
+    "walkItems-dog": "en/walkItems-dog.mp3",
+    "walkItems-tree": "en/walkItems-tree.mp3",
+    "walkSay": "en/walkSay.mp3",
+    "walkSongSay": "en/walkSongSay.mp3"
   }
 }
