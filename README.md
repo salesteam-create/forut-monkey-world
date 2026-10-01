@@ -1,4 +1,4 @@
-# Monkis verden (Monki's World), concept prototype
+# Monki's World, concept prototype
 
 A clickable v1 concept for FORUT Barneaksjonen's home platform, built for the pitch.
 Mobile-first web app, Norwegian by default with an English toggle.

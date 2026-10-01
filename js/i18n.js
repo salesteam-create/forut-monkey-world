@@ -5,7 +5,7 @@ window.I18N = {
     langName: 'Norsk',
     switchTo: 'EN',
     sound: 'Lyd',
-    appName: 'Monkis verden',
+    appName: "Monki's World",
     concept: 'Konseptskisse',
 
     welcomeKicker: 'Fra barnehagen',
@@ -119,7 +119,7 @@ window.I18N = {
     settingsTitle: 'Innstillinger',
     setReminder: 'Påminnelse ved henting i barnehagen',
     setSound: 'Monki leser høyt',
-    whyTitle: 'Hvorfor Monkis verden er annerledes',
+    whyTitle: "Hvorfor Monki's World er annerledes",
     why: [
       'Ingen reklame og ingen algoritmer. Innholdet er laget av FORUT.',
       'Målet er ikke mer skjermtid, men flere gode øyeblikk sammen.',
@@ -187,7 +187,7 @@ window.I18N = {
     fridgeOpen: 'Bananatre til kjøleskapet',
     fridgeSheetTitle: 'Monkis bananatre',
     fridgeSheetBody: 'Fargelegg en banan hver dag dere gjør noe sammen!',
-    fridgeSheetFoot: 'Monkis verden · FORUT Barneaksjonen',
+    fridgeSheetFoot: "Monki's World · FORUT Barneaksjonen",
 
     // Treasure hunt
     huntTitle: 'Skattejakt',

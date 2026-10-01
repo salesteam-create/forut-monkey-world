@@ -971,7 +971,7 @@
 
   function render() {
     document.documentElement.lang = state.lang === 'no' ? 'nb' : 'en';
-    document.title = t('appName') + ' | ' + t('concept');
+    document.title = t('appName');
     renderTopbar();
     const el = $('#screen');
     el.className = 'screen screen-' + screen;

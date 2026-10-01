@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Voice tooling for Monkis verden.
+"""Voice tooling for Monki's World.
 
   python3 tools/voice.py manifest   # after adding recordings: rebuild assets/voice/manifest.json
   python3 tools/voice.py script     # rebuild the recording script sheet (voice/voice-script.xlsx)
