@@ -75,5 +75,5 @@ js/voice-lines.js   every spoken line, with character and tone notes
 js/art.js           inline SVG illustrations
 js/app.js           screens, game logic, state
 assets/characters/  Monki, Yanay, Orbai, Suala, Palaiya
-assets/brand/       FORUT logo
+assets/brand/       FORUT logo, Monki's World (EN) and Monki's Verden (NO) logos
 ```

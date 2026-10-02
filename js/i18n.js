@@ -6,6 +6,7 @@ window.I18N = {
     switchTo: 'EN',
     sound: 'Lyd',
     appName: "Monki's World",
+    logo: 'assets/brand/monkis-verden-logo.png',
     concept: 'Konseptskisse',
 
     welcomeKicker: 'Fra barnehagen',
@@ -274,6 +275,7 @@ window.I18N = {
     switchTo: 'NO',
     sound: 'Sound',
     appName: "Monki's World",
+    logo: 'assets/brand/monkis-world-logo.png',
     concept: 'Concept sketch',
 
     welcomeKicker: 'From kindergarten',
